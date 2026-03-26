@@ -64,3 +64,12 @@
 ## Documentação v6
 - [x] README.md completo e detalhado
 - [x] Commit e push no GitHub
+
+## Correções v7
+- [x] Corrigir erro de carregamento na página Todos os Bens (status vazio enviado como string vazia)
+- [x] Adicionar ordenação por valor (maior→menor / menor→maior) e por todas as colunas
+
+## Correções v8
+- [x] Corrigir repositório GitHub (repositório privado, push forcável com checkpoint)
+- [x] Corrigir @import Roboto fora de ordem no CSS
+- [x] Validar correção do status vazio na listagem

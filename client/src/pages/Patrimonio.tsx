@@ -9,6 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  ArrowDownUp,
+  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -140,26 +142,42 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
   const [setor, setSetor]             = useState<string>("");
   const [status, setStatus]           = useState<string>("");
   const [tipo, setTipo]               = useState<string>("");
+  const [sortBy, setSortBy]           = useState<string>("patrimonio");
+  const [sortDir, setSortDir]         = useState<"asc" | "desc">("asc");
   const [page, setPage]               = useState(1);
   const pageSize                      = 25;
   const [showFilters, setShowFilters] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PatrimonioItem | null>(null);
 
+  // Alterna ordenação: se já está na coluna, inverte; senão vai para asc
+  const handleSort = (col: string) => {
+    if (sortBy === col) {
+      setSortDir((d) => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(col);
+      setSortDir(col === "valor" ? "desc" : "asc"); // valor começa desc (maior primeiro)
+    }
+    setPage(1);
+  };
+
   const { data: setores } = trpc.patrimonio.setores.useQuery();
 
   // Se fixedStatus for passado, usa ele; senão usa o filtro do usuário
-  const effectiveStatus = fixedStatus ?? (status as any) ?? undefined;
+  // IMPORTANTE: nunca enviar string vazia — o backend só aceita "localizado" | "nao_localizado" | undefined
+  const effectiveStatus = fixedStatus ?? (status || undefined) as ("localizado" | "nao_localizado" | undefined);
 
   const { data, isLoading } = trpc.patrimonio.list.useQuery(
     {
       search:   search   || undefined,
       setor:    setor    || undefined,
       status:   effectiveStatus,
-      tipo:     (tipo    as any) || undefined,
+      tipo:     (tipo || undefined) as any,
+      sortBy,
+      sortDir,
       page,
       pageSize,
     },
-    { staleTime: 30_000 }  // cache 30s para evitar refetch ao navegar entre páginas
+    { staleTime: 15_000 }
   );
 
   const totalPages = data ? Math.ceil(data.total / pageSize) : 0;
@@ -316,14 +334,32 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
             <table className="w-full detran-table" style={{ minWidth: 720 }}>
               <thead>
                 <tr>
-                  <th className="px-4 py-3 text-left w-28">Patrimônio</th>
-                  <th className="px-4 py-3 text-left">Descrição</th>
-                  <th className="px-4 py-3 text-left w-36">Setor</th>
-                  <th className="px-4 py-3 text-left w-36">Local</th>
-                  <th className="px-4 py-3 text-left w-24">Data</th>
-                  <th className="px-4 py-3 text-right w-28">Valor</th>
-                  <th className="px-4 py-3 text-center w-28">Tipo</th>
-                  <th className="px-4 py-3 text-center w-32">Status</th>
+                  {/* Cabeçalhos com botões de ordenação */}
+                  {([
+                    { key: "patrimonio", label: "Patrimônio", align: "left", w: "w-28" },
+                    { key: "descricao",  label: "Descrição",  align: "left", w: "" },
+                    { key: "setor",      label: "Setor",      align: "left", w: "w-36" },
+                    { key: "local",      label: "Local",      align: "left", w: "w-36" },
+                    { key: "dataIncorporacao", label: "Data", align: "left", w: "w-24" },
+                    { key: "valor",      label: "Valor",      align: "right", w: "w-28" },
+                    { key: "tipo",       label: "Tipo",       align: "center", w: "w-28", noSort: true },
+                    { key: "status",     label: "Status",     align: "center", w: "w-32", noSort: true },
+                  ] as const).map(({ key, label, align, w, noSort }: any) => (
+                    <th
+                      key={key}
+                      className={`px-4 py-3 text-${align} ${w} ${!noSort ? "cursor-pointer select-none hover:bg-slate-100 transition-colors" : ""}`}
+                      onClick={noSort ? undefined : () => handleSort(key)}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        {label}
+                        {!noSort && (
+                          sortBy === key
+                            ? <ArrowDownUp size={13} className="opacity-80" style={{ color: "#1a73c4" }} />
+                            : <ArrowUpDown size={13} className="opacity-30" />
+                        )}
+                      </span>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
