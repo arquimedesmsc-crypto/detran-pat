@@ -1,7 +1,7 @@
 # DETRAN-RJ — Sistema de Gestão Patrimonial
 
 <p align="center">
-  <img src="https://cdn.manus.space/webdev/oTCLSWdpa8zHUdyVqArmkm/Screenshot_2026-03-17-15-32-34-457_com.google.android.googlequicksearchbox-edit-1742997093.jpg" alt="Logo DETRAN-RJ" width="120" />
+  <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663443081896/qQEWeHKIjJGFtIer.jpg" alt="Logo DETRAN-RJ" width="120" />
 </p>
 
 <p align="center">
