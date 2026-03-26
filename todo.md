@@ -27,3 +27,10 @@
 ## Testes
 - [x] Vitest para routers de patrimônio (10 testes passando)
 - [x] Checkpoint final
+
+## Correções Mobile (v2)
+- [x] Sidebar: no mobile deve iniciar fechada e abrir como drawer (overlay) ao clicar no hamburguer
+- [x] Sidebar: botão de colapso (desktop) não deve aparecer no mobile
+- [x] Tabela: layout responsivo com scroll horizontal e colunas adaptadas para mobile
+- [x] Tabela: campos não devem ser cortados — usar layout de card no mobile
+- [x] Filtros: reorganizar para mobile (stacked)
