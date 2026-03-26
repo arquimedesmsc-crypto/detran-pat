@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -43,39 +44,40 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
+  /* DETRAN-RJ Color Palette */
+  --primary: oklch(0.48 0.18 240);
+  --primary-foreground: oklch(1 0 0);
+  --sidebar-primary: oklch(0.48 0.18 240);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --chart-1: oklch(0.48 0.18 240);
+  --chart-2: oklch(0.42 0.16 155);
+  --chart-3: oklch(0.55 0.18 50);
+  --chart-4: oklch(0.55 0.22 25);
+  --chart-5: oklch(0.6 0.15 290);
+  --radius: 0.75rem;
+  --background: oklch(0.97 0.005 240);
+  --foreground: oklch(0.15 0.03 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
+  --card-foreground: oklch(0.15 0.03 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --popover-foreground: oklch(0.15 0.03 250);
+  --secondary: oklch(0.96 0.01 240);
+  --secondary-foreground: oklch(0.3 0.05 250);
+  --muted: oklch(0.95 0.01 240);
+  --muted-foreground: oklch(0.5 0.03 250);
+  --accent: oklch(0.96 0.01 240);
+  --accent-foreground: oklch(0.3 0.05 250);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.9 0.01 240);
+  --input: oklch(0.9 0.01 240);
+  --ring: oklch(0.48 0.18 240);
+  --sidebar: oklch(0.22 0.05 250);
+  --sidebar-foreground: oklch(0.92 0.01 240);
+  --sidebar-accent: oklch(0.28 0.06 250);
+  --sidebar-accent-foreground: oklch(0.92 0.01 240);
+  --sidebar-border: oklch(0.3 0.05 250);
+  --sidebar-ring: oklch(0.48 0.18 240);
 }
 
 .dark {
@@ -119,6 +121,12 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Roboto", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Roboto", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -169,9 +177,89 @@
 
   @media (min-width: 1024px) {
     .container {
-      padding-left: 2rem; /* 32px - desktop padding */
+      padding-left: 2rem;
       padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
+      max-width: 1400px;
     }
   }
 }
+
+/* ── DETRAN-RJ Gradient Utilities ─────────────────────────────────────────── */
+.detran-gradient {
+  background: linear-gradient(135deg, #1b4f72 0%, #1a73c4 50%, #1b8a5a 100%);
+}
+.detran-gradient-blue {
+  background: linear-gradient(135deg, #1b4f72 0%, #1a73c4 100%);
+}
+.detran-gradient-green {
+  background: linear-gradient(135deg, #1b8a5a 0%, #2e9d6a 100%);
+}
+.detran-gradient-gold {
+  background: linear-gradient(135deg, #d4a017 0%, #f0c040 100%);
+}
+.detran-gradient-red {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+.detran-gradient-text {
+  background: linear-gradient(135deg, #1b4f72, #1a73c4, #1b8a5a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Sidebar Active Item ──────────────────────────────────────────────────── */
+.sidebar-item-active {
+  border-left: 3px solid #1b8a5a;
+  background: linear-gradient(90deg, rgba(26,115,196,0.18), rgba(27,138,90,0.08));
+  color: white;
+}
+
+/* ── KPI Card Hover ──────────────────────────────────────────────────────── */
+.kpi-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+
+/* ── Table Styles ────────────────────────────────────────────────────────── */
+.detran-table thead tr {
+  background: linear-gradient(90deg, #f8fafc, #f0f9ff);
+}
+.detran-table thead th {
+  color: #1b4f72;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.detran-table tbody tr:hover {
+  background-color: rgba(26,115,196,0.04);
+}
+
+/* ── Splash Screen ───────────────────────────────────────────────────────── */
+.splash-progress-bar {
+  background: linear-gradient(90deg, #1b4f72, #1a73c4, #1b8a5a, #1a73c4, #1b4f72);
+  background-size: 300% 100%;
+  animation: progressShimmer 2s ease-in-out infinite;
+}
+@keyframes progressShimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+.splash-dot {
+  animation: bounceDot 1.2s ease-in-out infinite;
+}
+.splash-dot:nth-child(2) { animation-delay: 0.2s; }
+.splash-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounceDot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-8px); opacity: 1; }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #1a73c4; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #1b4f72; }

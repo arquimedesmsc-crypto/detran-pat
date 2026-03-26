@@ -4,35 +4,37 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import SplashScreen from "./components/SplashScreen";
+import PatrimonioLayout from "./components/PatrimonioLayout";
+import Dashboard from "./pages/Dashboard";
+import Patrimonio from "./pages/Patrimonio";
+import Graficos from "./pages/Graficos";
+import { useState } from "react";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
+    <PatrimonioLayout>
+      <Switch>
+        <Route path="/" component={Dashboard} />
+        <Route path="/patrimonio" component={Patrimonio} />
+        <Route path="/graficos" component={Graficos} />
+        <Route path="/404" component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+    </PatrimonioLayout>
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
 function App() {
+  const [splashDone, setSplashDone] = useState(false);
+
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          {!splashDone && <SplashScreen onComplete={() => setSplashDone(true)} />}
+          {splashDone && <Router />}
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

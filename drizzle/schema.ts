@@ -1,17 +1,7 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { decimal, int, mysqlEnum, mysqlTable, text, timestamp, varchar, date } from "drizzle-orm/mysql-core";
 
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
   id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
@@ -25,4 +15,19 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+export const patrimonioItems = mysqlTable("patrimonio_items", {
+  id: int("id").autoincrement().primaryKey(),
+  patrimonio: int("patrimonio").notNull(),
+  descricao: text("descricao"),
+  setor: varchar("setor", { length: 255 }),
+  local: varchar("local", { length: 255 }),
+  dataIncorporacao: date("data_incorporacao"),
+  valor: decimal("valor", { precision: 12, scale: 2 }),
+  status: mysqlEnum("status", ["localizado", "nao_localizado"]).default("nao_localizado").notNull(),
+  tipo: mysqlEnum("tipo", ["informatica", "mobiliario", "eletrodomestico", "veiculo", "outros"]).default("outros").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PatrimonioItem = typeof patrimonioItems.$inferSelect;
+export type InsertPatrimonioItem = typeof patrimonioItems.$inferInsert;

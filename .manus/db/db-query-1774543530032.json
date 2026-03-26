@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE `patrimonio_items` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`patrimonio` int NOT NULL,\n\t`descricao` text,\n\t`setor` varchar(255),\n\t`local` varchar(255),\n\t`data_incorporacao` date,\n\t`valor` decimal(12,2),\n\t`status` enum('localizado','nao_localizado') NOT NULL DEFAULT 'nao_localizado',\n\t`tipo` enum('informatica','mobiliario','eletrodomestico','veiculo','outros') NOT NULL DEFAULT 'outros',\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `patrimonio_items_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4Kzn8Ew9LunbFoC.20511818833e --database oTCLSWdpa8zHUdyVqArmkm --execute CREATE TABLE `patrimonio_items` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`patrimonio` int NOT NULL,\n\t`descricao` text,\n\t`setor` varchar(255),\n\t`local` varchar(255),\n\t`data_incorporacao` date,\n\t`valor` decimal(12,2),\n\t`status` enum('localizado','nao_localizado') NOT NULL DEFAULT 'nao_localizado',\n\t`tipo` enum('informatica','mobiliario','eletrodomestico','veiculo','outros') NOT NULL DEFAULT 'outros',\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `patrimonio_items_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 505
+}
