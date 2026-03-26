@@ -1,0 +1,8 @@
+{
+  "query": "\nCREATE INDEX idx_patrimonio_status ON patrimonio_items(status);\nCREATE INDEX idx_patrimonio_setor ON patrimonio_items(setor(100));\nCREATE INDEX idx_patrimonio_tipo ON patrimonio_items(tipo);\nCREATE INDEX idx_patrimonio_patrimonio ON patrimonio_items(patrimonio);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4Kzn8Ew9LunbFoC.20511818833e --database oTCLSWdpa8zHUdyVqArmkm --execute \nCREATE INDEX idx_patrimonio_status ON patrimonio_items(status);\nCREATE INDEX idx_patrimonio_setor ON patrimonio_items(setor(100));\nCREATE INDEX idx_patrimonio_tipo ON patrimonio_items(tipo);\nCREATE INDEX idx_patrimonio_patrimonio ON patrimonio_items(patrimonio);\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1061 (42000) at line 2: Duplicate key name 'idx_patrimonio_status'"
+  ]
+}

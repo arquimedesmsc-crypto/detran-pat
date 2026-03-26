@@ -56,3 +56,7 @@
 - [x] Diagnosticar e corrigir valor zerado nos bens localizados (planilha fonte só tem valor para não localizados)
 - [x] Dashboard: seção de valores em bloco separado com mais espaçamento
 - [x] Dashboard: grid de contagens (3 cards) separado do grid de valores (3 cards)
+
+## Correções v5
+- [x] Diagnosticar e corrigir lentidão na listagem (índices, query, payload)
+- [x] Dashboard: valor localizado = valorTotal - valorNaoLocalizado (cálculo fixo)

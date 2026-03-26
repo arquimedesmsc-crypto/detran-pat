@@ -11,6 +11,7 @@ import {
   getPatrimonioKPIs,
   getPatrimonioTimeline,
   getSetoresList,
+  invalidatePatrimonioCache,
   marcarLocalizado,
 } from "./db";
 
@@ -37,7 +38,7 @@ export const appRouter = router({
           dataInicio: z.string().optional(),
           dataFim: z.string().optional(),
           page: z.number().min(1).default(1),
-          pageSize: z.number().min(1).max(200).default(50),
+          pageSize: z.number().min(1).max(200).default(25),
           sortBy: z.string().optional(),
           sortDir: z.enum(["asc", "desc"]).optional(),
         })
@@ -69,7 +70,9 @@ export const appRouter = router({
     marcarLocalizado: publicProcedure
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
-        return marcarLocalizado(input.id);
+        const result = await marcarLocalizado(input.id);
+        invalidatePatrimonioCache();
+        return result;
       }),
 
     criar: publicProcedure
@@ -88,7 +91,9 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        return createPatrimonioItem(input);
+        const result = await createPatrimonioItem(input);
+        invalidatePatrimonioCache();
+        return result;
       }),
   }),
 });

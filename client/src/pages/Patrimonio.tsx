@@ -141,7 +141,7 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
   const [status, setStatus]           = useState<string>("");
   const [tipo, setTipo]               = useState<string>("");
   const [page, setPage]               = useState(1);
-  const pageSize                      = 50;
+  const pageSize                      = 25;
   const [showFilters, setShowFilters] = useState(false);
   const [selectedItem, setSelectedItem] = useState<PatrimonioItem | null>(null);
 
@@ -150,14 +150,17 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
   // Se fixedStatus for passado, usa ele; senão usa o filtro do usuário
   const effectiveStatus = fixedStatus ?? (status as any) ?? undefined;
 
-  const { data, isLoading } = trpc.patrimonio.list.useQuery({
-    search:   search   || undefined,
-    setor:    setor    || undefined,
-    status:   effectiveStatus,
-    tipo:     (tipo    as any) || undefined,
-    page,
-    pageSize,
-  });
+  const { data, isLoading } = trpc.patrimonio.list.useQuery(
+    {
+      search:   search   || undefined,
+      setor:    setor    || undefined,
+      status:   effectiveStatus,
+      tipo:     (tipo    as any) || undefined,
+      page,
+      pageSize,
+    },
+    { staleTime: 30_000 }  // cache 30s para evitar refetch ao navegar entre páginas
+  );
 
   const totalPages = data ? Math.ceil(data.total / pageSize) : 0;
   const hasFilters = !!(search || setor || status || tipo);

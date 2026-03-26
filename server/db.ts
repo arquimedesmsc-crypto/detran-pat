@@ -78,6 +78,20 @@ export interface PatrimonioFilters {
   sortDir?: "asc" | "desc";
 }
 
+// Cache simples em memória para evitar roundtrips repetidos
+const _cache = new Map<string, { data: any; ts: number }>();
+function cacheGet<T>(key: string, ttlMs: number): T | null {
+  const entry = _cache.get(key);
+  if (entry && Date.now() - entry.ts < ttlMs) return entry.data as T;
+  return null;
+}
+function cacheSet(key: string, data: any) {
+  _cache.set(key, { data, ts: Date.now() });
+}
+export function invalidatePatrimonioCache() {
+  _cache.clear();
+}
+
 export async function getPatrimonioItems(filters: PatrimonioFilters = {}) {
   const db = await getDb();
   if (!db) return { items: [], total: 0 };
@@ -91,7 +105,7 @@ export async function getPatrimonioItems(filters: PatrimonioFilters = {}) {
     dataInicio,
     dataFim,
     page = 1,
-    pageSize = 50,
+    pageSize = 25,
     sortBy = "patrimonio",
     sortDir = "asc",
   } = filters;
@@ -99,14 +113,22 @@ export async function getPatrimonioItems(filters: PatrimonioFilters = {}) {
   const conditions = [];
 
   if (search) {
-    conditions.push(
-      or(
-        like(patrimonioItems.descricao, `%${search}%`),
-        like(patrimonioItems.setor, `%${search}%`),
-        like(patrimonioItems.local, `%${search}%`),
-        sql`CAST(${patrimonioItems.patrimonio} AS CHAR) LIKE ${`%${search}%`}`
-      )
-    );
+    const trimmed = search.trim();
+    // Busca numérica exata por número de patrimônio (usa índice)
+    const numSearch = Number(trimmed);
+    if (!isNaN(numSearch) && trimmed !== "") {
+      conditions.push(eq(patrimonioItems.patrimonio, numSearch));
+    } else {
+      // Busca textual: usa LIKE %termo% apenas em descricao (mais relevante)
+      // e prefixo em setor/local para aproveitar índices parcialmente
+      conditions.push(
+        or(
+          like(patrimonioItems.descricao, `%${trimmed}%`),
+          like(patrimonioItems.setor, `${trimmed}%`),
+          like(patrimonioItems.local, `${trimmed}%`)
+        )
+      );
+    }
   }
   if (setor) conditions.push(eq(patrimonioItems.setor, setor));
   if (local) conditions.push(eq(patrimonioItems.local, local));
@@ -145,11 +167,24 @@ export async function getPatrimonioItems(filters: PatrimonioFilters = {}) {
   return { items, total: totalResult[0]?.count ?? 0 };
 }
 
-export async function getPatrimonioKPIs() {
+interface KPIResult {
+  total: number;
+  byStatus: { status: string; total: number }[];
+  byTipo: { tipo: string; total: number }[];
+  valorNaoLocalizado: number;
+  valorTotal: number;
+  valorLocalizado: number;
+}
+
+export async function getPatrimonioKPIs(): Promise<KPIResult | null> {
+  const CACHE_KEY = "kpis";
+  const cached = cacheGet<KPIResult>(CACHE_KEY, 30_000);
+  if (cached) return cached;
+
   const db = await getDb();
   if (!db) return null;
 
-  const [totals, byStatus, byTipo, valorNaoLocalizado, valorTotal, valorLocalizado] = await Promise.all([
+  const [totals, byStatus, byTipo, valorNaoLocalizado, valorTotal] = await Promise.all([
     db.select({ total: count() }).from(patrimonioItems),
     db
       .select({ status: patrimonioItems.status, total: count() })
@@ -166,20 +201,24 @@ export async function getPatrimonioKPIs() {
     db
       .select({ totalValor: sum(patrimonioItems.valor) })
       .from(patrimonioItems),
-    db
-      .select({ totalValor: sum(patrimonioItems.valor) })
-      .from(patrimonioItems)
-      .where(eq(patrimonioItems.status, "localizado")),
   ]);
 
-  return {
+  const vTotal = Number(valorTotal[0]?.totalValor ?? 0);
+  const vNaoLocalizado = Number(valorNaoLocalizado[0]?.totalValor ?? 0);
+  // Valor localizado = total declarado - não localizado (planilha só declara valor para não localizados)
+  const vLocalizado = vTotal - vNaoLocalizado;
+
+  const result = {
     total: totals[0]?.total ?? 0,
     byStatus,
     byTipo,
-    valorNaoLocalizado: Number(valorNaoLocalizado[0]?.totalValor ?? 0),
-    valorTotal: Number(valorTotal[0]?.totalValor ?? 0),
-    valorLocalizado: Number(valorLocalizado[0]?.totalValor ?? 0),
+    valorNaoLocalizado: vNaoLocalizado,
+    valorTotal: vTotal,
+    valorLocalizado: vLocalizado,
   };
+
+  cacheSet(CACHE_KEY, result);
+  return result;
 }
 
 export async function getPatrimonioBySetor() {
