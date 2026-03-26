@@ -129,7 +129,12 @@ function ItemCard({ item, onClick }: { item: PatrimonioItem; onClick: () => void
 }
 
 /* ── Componente principal ───────────────────────────────────────────────── */
-export default function Patrimonio() {
+interface PatrimonioProps {
+  fixedStatus?: "localizado" | "nao_localizado";
+  pageTitle?: string;
+}
+
+export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) {
   const [search, setSearch]           = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [setor, setSetor]             = useState<string>("");
@@ -142,10 +147,13 @@ export default function Patrimonio() {
 
   const { data: setores } = trpc.patrimonio.setores.useQuery();
 
+  // Se fixedStatus for passado, usa ele; senão usa o filtro do usuário
+  const effectiveStatus = fixedStatus ?? (status as any) ?? undefined;
+
   const { data, isLoading } = trpc.patrimonio.list.useQuery({
     search:   search   || undefined,
     setor:    setor    || undefined,
-    status:   (status  as any) || undefined,
+    status:   effectiveStatus,
     tipo:     (tipo    as any) || undefined,
     page,
     pageSize,
@@ -180,13 +188,24 @@ export default function Patrimonio() {
       <div className="p-4 md:p-6 space-y-4">
 
         {/* ── Header ── */}
-        <div className="detran-gradient-blue rounded-xl p-5 text-white shadow-lg">
+        <div
+          className="rounded-xl p-5 text-white shadow-lg"
+          style={{
+            background: fixedStatus === "localizado"
+              ? "linear-gradient(135deg, #1b8a5a 0%, #22c55e 100%)"
+              : fixedStatus === "nao_localizado"
+              ? "linear-gradient(135deg, #b45309 0%, #d4a017 100%)"
+              : "linear-gradient(135deg, #1b4f72 0%, #1a73c4 100%)",
+          }}
+        >
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 flex-shrink-0">
               <List size={24} className="text-white" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-xl font-black leading-tight">Levantamento Patrimonial</h1>
+              <h1 className="text-xl font-black leading-tight">
+                {pageTitle ?? "Levantamento Patrimonial"}
+              </h1>
               <p className="text-white/70 text-sm mt-0.5 truncate">
                 {data
                   ? `${data.total.toLocaleString("pt-BR")} registros — clique em qualquer item para detalhes`

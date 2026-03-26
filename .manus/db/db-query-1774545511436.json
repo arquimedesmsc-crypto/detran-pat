@@ -1,0 +1,24 @@
+{
+  "query": "\nSELECT \n  status,\n  COUNT(*) as total_itens,\n  COUNT(CASE WHEN valor IS NOT NULL AND valor > 0 THEN 1 END) as com_valor,\n  COUNT(CASE WHEN valor IS NULL OR valor = 0 THEN 1 END) as sem_valor,\n  ROUND(SUM(CASE WHEN valor IS NOT NULL THEN valor ELSE 0 END), 2) as soma_valor\nFROM patrimonio_items\nGROUP BY status;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4Kzn8Ew9LunbFoC.20511818833e --database oTCLSWdpa8zHUdyVqArmkm --execute \nSELECT \n  status,\n  COUNT(*) as total_itens,\n  COUNT(CASE WHEN valor IS NOT NULL AND valor > 0 THEN 1 END) as com_valor,\n  COUNT(CASE WHEN valor IS NULL OR valor = 0 THEN 1 END) as sem_valor,\n  ROUND(SUM(CASE WHEN valor IS NOT NULL THEN valor ELSE 0 END), 2) as soma_valor\nFROM patrimonio_items\nGROUP BY status;\n",
+  "rows": [
+    {
+      "status": "localizado",
+      "total_itens": "985",
+      "com_valor": "0",
+      "sem_valor": "985",
+      "soma_valor": "0.00"
+    },
+    {
+      "status": "nao_localizado",
+      "total_itens": "222",
+      "com_valor": "221",
+      "sem_valor": "1",
+      "soma_valor": "34388.41"
+    }
+  ],
+  "messages": [],
+  "stdout": "status\ttotal_itens\tcom_valor\tsem_valor\tsoma_valor\nlocalizado\t985\t0\t985\t0.00\nnao_localizado\t222\t221\t1\t34388.41\n",
+  "stderr": "",
+  "execution_time_ms": 60
+}

@@ -41,3 +41,18 @@
 - [x] Dashboard: adicionar KPI de valor total do acervo e valor total localizado
 - [x] Listagem: colunas mais relevantes em destaque, clique em qualquer linha abre modal
 - [x] Corrigir valor nos cards mobile da listagem
+
+## Melhorias v4
+- [x] Sidebar: submenu "Levantamento" com itens Localizados e Não Localizados
+- [x] Rotas /localizados e /nao-localizados com listagem pré-filtrada
+- [x] Backend: mutation para criar novo item patrimonial
+- [x] Backend: mutation para marcar item como localizado
+- [x] Modal "Registrar Novo Patrimônio" com formulário completo
+- [x] Botão "Identificar como Localizado" no modal de detalhe
+- [x] Botão flutuante/fixo "Novo Patrimônio" na listagem
+- [x] Feedback visual (toast) após registrar ou localizar item
+
+## Correções v4
+- [x] Diagnosticar e corrigir valor zerado nos bens localizados (planilha fonte só tem valor para não localizados)
+- [x] Dashboard: seção de valores em bloco separado com mais espaçamento
+- [x] Dashboard: grid de contagens (3 cards) separado do grid de valores (3 cards)

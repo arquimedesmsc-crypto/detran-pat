@@ -8,6 +8,8 @@ import SplashScreen from "./components/SplashScreen";
 import PatrimonioLayout from "./components/PatrimonioLayout";
 import Dashboard from "./pages/Dashboard";
 import Patrimonio from "./pages/Patrimonio";
+import Localizados from "./pages/Localizados";
+import NaoLocalizados from "./pages/NaoLocalizados";
 import Graficos from "./pages/Graficos";
 import { useState } from "react";
 
@@ -16,7 +18,9 @@ function Router() {
     <PatrimonioLayout>
       <Switch>
         <Route path="/" component={Dashboard} />
-        <Route path="/patrimonio" component={Patrimonio} />
+        <Route path="/patrimonio">{() => <Patrimonio />}</Route>
+        <Route path="/localizados">{() => <Localizados />}</Route>
+        <Route path="/nao-localizados">{() => <NaoLocalizados />}</Route>
         <Route path="/graficos" component={Graficos} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />

@@ -4,12 +4,14 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import {
+  createPatrimonioItem,
   getLocaisList,
   getPatrimonioBySetor,
   getPatrimonioItems,
   getPatrimonioKPIs,
   getPatrimonioTimeline,
   getSetoresList,
+  marcarLocalizado,
 } from "./db";
 
 export const appRouter = router({
@@ -63,6 +65,31 @@ export const appRouter = router({
     locais: publicProcedure.query(async () => {
       return getLocaisList();
     }),
+
+    marcarLocalizado: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        return marcarLocalizado(input.id);
+      }),
+
+    criar: publicProcedure
+      .input(
+        z.object({
+          patrimonio: z.number().int().positive(),
+          descricao: z.string().min(1).max(500),
+          setor: z.string().max(255).optional(),
+          local: z.string().max(255).optional(),
+          dataIncorporacao: z.string().optional(),
+          valor: z.number().nonnegative().optional(),
+          status: z.enum(["localizado", "nao_localizado"]).default("nao_localizado"),
+          tipo: z
+            .enum(["informatica", "mobiliario", "eletrodomestico", "veiculo", "outros"])
+            .default("outros"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return createPatrimonioItem(input);
+      }),
   }),
 });
 

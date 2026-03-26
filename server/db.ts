@@ -235,3 +235,60 @@ export async function getLocaisList() {
 
   return result.map((r) => r.local).filter(Boolean) as string[];
 }
+
+export async function marcarLocalizado(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db
+    .update(patrimonioItems)
+    .set({ status: "localizado" })
+    .where(eq(patrimonioItems.id, id));
+
+  const result = await db
+    .select()
+    .from(patrimonioItems)
+    .where(eq(patrimonioItems.id, id))
+    .limit(1);
+
+  return result[0] ?? null;
+}
+
+export async function createPatrimonioItem(data: {
+  patrimonio: number;
+  descricao: string;
+  setor?: string;
+  local?: string;
+  dataIncorporacao?: string;
+  valor?: number;
+  status?: "localizado" | "nao_localizado";
+  tipo?: "informatica" | "mobiliario" | "eletrodomestico" | "veiculo" | "outros";
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const insertData: any = {
+    patrimonio: data.patrimonio,
+    descricao: data.descricao,
+    status: data.status ?? "nao_localizado",
+    tipo: data.tipo ?? "outros",
+  };
+
+  if (data.setor) insertData.setor = data.setor;
+  if (data.local) insertData.local = data.local;
+  if (data.valor !== undefined && data.valor !== null) insertData.valor = String(data.valor);
+  if (data.dataIncorporacao) insertData.dataIncorporacao = new Date(data.dataIncorporacao);
+
+  const result = await db.insert(patrimonioItems).values(insertData);
+  const insertId = (result as any)[0]?.insertId;
+
+  if (insertId) {
+    const created = await db
+      .select()
+      .from(patrimonioItems)
+      .where(eq(patrimonioItems.id, insertId))
+      .limit(1);
+    return created[0] ?? null;
+  }
+  return null;
+}
