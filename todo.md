@@ -60,3 +60,7 @@
 ## Correções v5
 - [x] Diagnosticar e corrigir lentidão na listagem (índices, query, payload)
 - [x] Dashboard: valor localizado = valorTotal - valorNaoLocalizado (cálculo fixo)
+
+## Documentação v6
+- [x] README.md completo e detalhado
+- [x] Commit e push no GitHub
