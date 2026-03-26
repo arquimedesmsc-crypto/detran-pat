@@ -149,7 +149,7 @@ export async function getPatrimonioKPIs() {
   const db = await getDb();
   if (!db) return null;
 
-  const [totals, byStatus, byTipo, valorNaoLocalizado] = await Promise.all([
+  const [totals, byStatus, byTipo, valorNaoLocalizado, valorTotal, valorLocalizado] = await Promise.all([
     db.select({ total: count() }).from(patrimonioItems),
     db
       .select({ status: patrimonioItems.status, total: count() })
@@ -163,6 +163,13 @@ export async function getPatrimonioKPIs() {
       .select({ totalValor: sum(patrimonioItems.valor) })
       .from(patrimonioItems)
       .where(eq(patrimonioItems.status, "nao_localizado")),
+    db
+      .select({ totalValor: sum(patrimonioItems.valor) })
+      .from(patrimonioItems),
+    db
+      .select({ totalValor: sum(patrimonioItems.valor) })
+      .from(patrimonioItems)
+      .where(eq(patrimonioItems.status, "localizado")),
   ]);
 
   return {
@@ -170,6 +177,8 @@ export async function getPatrimonioKPIs() {
     byStatus,
     byTipo,
     valorNaoLocalizado: Number(valorNaoLocalizado[0]?.totalValor ?? 0),
+    valorTotal: Number(valorTotal[0]?.totalValor ?? 0),
+    valorLocalizado: Number(valorLocalizado[0]?.totalValor ?? 0),
   };
 }
 

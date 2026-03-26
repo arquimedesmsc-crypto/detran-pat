@@ -1,0 +1,18 @@
+{
+  "query": "\nSELECT \n  COUNT(*) as total_itens,\n  COUNT(CASE WHEN valor IS NULL OR valor = 0 THEN 1 END) as sem_valor,\n  COUNT(CASE WHEN valor > 0 THEN 1 END) as com_valor,\n  ROUND(SUM(CASE WHEN valor > 0 THEN valor ELSE 0 END), 2) as valor_total,\n  ROUND(SUM(CASE WHEN status = 'nao_localizado' AND valor > 0 THEN valor ELSE 0 END), 2) as valor_nao_localizado,\n  ROUND(SUM(CASE WHEN status = 'localizado' AND valor > 0 THEN valor ELSE 0 END), 2) as valor_localizado\nFROM patrimonio_items;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4Kzn8Ew9LunbFoC.20511818833e --database oTCLSWdpa8zHUdyVqArmkm --execute \nSELECT \n  COUNT(*) as total_itens,\n  COUNT(CASE WHEN valor IS NULL OR valor = 0 THEN 1 END) as sem_valor,\n  COUNT(CASE WHEN valor > 0 THEN 1 END) as com_valor,\n  ROUND(SUM(CASE WHEN valor > 0 THEN valor ELSE 0 END), 2) as valor_total,\n  ROUND(SUM(CASE WHEN status = 'nao_localizado' AND valor > 0 THEN valor ELSE 0 END), 2) as valor_nao_localizado,\n  ROUND(SUM(CASE WHEN status = 'localizado' AND valor > 0 THEN valor ELSE 0 END), 2) as valor_localizado\nFROM patrimonio_items;\n",
+  "rows": [
+    {
+      "total_itens": "1207",
+      "sem_valor": "986",
+      "com_valor": "221",
+      "valor_total": "34388.41",
+      "valor_nao_localizado": "34388.41",
+      "valor_localizado": "0.00"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_itens\tsem_valor\tcom_valor\tvalor_total\tvalor_nao_localizado\tvalor_localizado\n1207\t986\t221\t34388.41\t34388.41\t0.00\n",
+  "stderr": "",
+  "execution_time_ms": 76
+}

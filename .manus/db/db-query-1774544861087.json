@@ -1,0 +1,150 @@
+{
+  "query": "\nSELECT patrimonio, descricao, valor, status, tipo\nFROM patrimonio_items\nWHERE valor IS NOT NULL AND valor > 0\nLIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4Kzn8Ew9LunbFoC.20511818833e --database oTCLSWdpa8zHUdyVqArmkm --execute \nSELECT patrimonio, descricao, valor, status, tipo\nFROM patrimonio_items\nWHERE valor IS NOT NULL AND valor > 0\nLIMIT 20;\n",
+  "rows": [
+    {
+      "patrimonio": "9751",
+      "descricao": "Armário Alto",
+      "valor": "162.11",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "11761",
+      "descricao": "Cadeira Giratória",
+      "valor": "57.71",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "24653",
+      "descricao": "Cadeira Giratória",
+      "valor": "57.71",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "26723",
+      "descricao": "Cadeira Giratória",
+      "valor": "57.71",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "26745",
+      "descricao": "Cadeira Giratória",
+      "valor": "57.71",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "26781",
+      "descricao": "Cadeira Giratória",
+      "valor": "57.71",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "26865",
+      "descricao": "Poltrona (outros)",
+      "valor": "72.21",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "27261",
+      "descricao": "Mesa de Escritório",
+      "valor": "24.00",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "27283",
+      "descricao": "Mesa de Reunião",
+      "valor": "98.63",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "27537",
+      "descricao": "Armário Alto",
+      "valor": "83.81",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "27539",
+      "descricao": "Cadeira Giratória",
+      "valor": "57.71",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "27541",
+      "descricao": "Mesa para Impressora",
+      "valor": "43.50",
+      "status": "nao_localizado",
+      "tipo": "informatica"
+    },
+    {
+      "patrimonio": "27724",
+      "descricao": "Mesa para Impressora",
+      "valor": "43.50",
+      "status": "nao_localizado",
+      "tipo": "informatica"
+    },
+    {
+      "patrimonio": "28751",
+      "descricao": "Cadeira Fixa",
+      "valor": "11.90",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "29050",
+      "descricao": "Cadeira Fixa",
+      "valor": "11.90",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "29067",
+      "descricao": "Mesa de Escritório",
+      "valor": "17.90",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "34987",
+      "descricao": "Banco Múltiplo",
+      "valor": "18.37",
+      "status": "nao_localizado",
+      "tipo": "outros"
+    },
+    {
+      "patrimonio": "38744",
+      "descricao": "Cadeira Fixa",
+      "valor": "6.32",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "40009",
+      "descricao": "Mesa (outros)",
+      "valor": "20.01",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    },
+    {
+      "patrimonio": "40014",
+      "descricao": "Mesa (outros)",
+      "valor": "7.04",
+      "status": "nao_localizado",
+      "tipo": "mobiliario"
+    }
+  ],
+  "messages": [],
+  "stdout": "patrimonio\tdescricao\tvalor\tstatus\ttipo\n9751\tArmário Alto\t162.11\tnao_localizado\tmobiliario\n11761\tCadeira Giratória\t57.71\tnao_localizado\tmobiliario\n24653\tCadeira Giratória\t57.71\tnao_localizado\tmobiliario\n26723\tCadeira Giratória\t57.71\tnao_localizado\tmobiliario\n26745\tCadeira Giratória\t57.71\tnao_localizado\tmobiliario\n26781\tCadeira Giratória\t57.71\tnao_localizado\tmobiliario\n26865\tPoltrona (outros)\t72.21\tnao_localizado\tmobiliario\n27261\tMesa de Escritório\t24.00\tnao_localizado\tmobiliario\n27283\tMesa de Reunião\t98.63\tnao_localizado\tmobiliario\n27537\tArmário Alto\t83.81\tnao_localizado\tmobiliario\n27539\tCadeira Giratória\t57.71\tnao_localizado\tmobiliario\n27541\tMesa para Impressora\t43.50\tnao_localizado\tinformatica\n27724\tMesa para Impressora\t43.50\tnao_localizado\tinformatica\n28751\tCadeira Fixa\t11.90\tnao_localizado\tmobiliario\n29050\tCadeira Fixa\t11.90\tnao_localizado\tmobiliario\n29067\tMesa de Escritório\t17.90\tnao_localizado\tmobiliario\n34987\tBanco Múltiplo\t18.37\tnao_localizado\toutros\n38744\tCadeira Fixa\t6.32\tnao_localizado\tmobiliario\n40009\tMesa (outros)\t20.01\tnao_localizado\tmobiliario\n40014\tMesa (outros)\t7.04\tnao_localizado\tmobiliario\n",
+  "stderr": "",
+  "execution_time_ms": 228
+}

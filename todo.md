@@ -34,3 +34,10 @@
 - [x] Tabela: layout responsivo com scroll horizontal e colunas adaptadas para mobile
 - [x] Tabela: campos não devem ser cortados — usar layout de card no mobile
 - [x] Filtros: reorganizar para mobile (stacked)
+
+## Melhorias v3
+- [x] Investigar e corrigir exibição de valores (campo valor no banco e conversão numérica)
+- [x] Modal/drawer de detalhe do item: todas as informações + histórico visual
+- [x] Dashboard: adicionar KPI de valor total do acervo e valor total localizado
+- [x] Listagem: colunas mais relevantes em destaque, clique em qualquer linha abre modal
+- [x] Corrigir valor nos cards mobile da listagem
