@@ -70,6 +70,9 @@ export interface PatrimonioFilters {
   local?: string;
   status?: "localizado" | "nao_localizado";
   tipo?: "informatica" | "mobiliario" | "eletrodomestico" | "veiculo" | "outros";
+  andar?: string;
+  valorMin?: number;
+  valorMax?: number;
   dataInicio?: string;
   dataFim?: string;
   page?: number;
@@ -102,6 +105,9 @@ export async function getPatrimonioItems(filters: PatrimonioFilters = {}) {
     local,
     status,
     tipo,
+    andar,
+    valorMin,
+    valorMax,
     dataInicio,
     dataFim,
     page = 1,
@@ -134,6 +140,9 @@ export async function getPatrimonioItems(filters: PatrimonioFilters = {}) {
   if (local) conditions.push(eq(patrimonioItems.local, local));
   if (status) conditions.push(eq(patrimonioItems.status, status));
   if (tipo) conditions.push(eq(patrimonioItems.tipo, tipo));
+  if (andar) conditions.push(like(patrimonioItems.andar, `%${andar}%`));
+  if (valorMin !== undefined && valorMin !== null) conditions.push(gte(patrimonioItems.valor, valorMin.toString()));
+  if (valorMax !== undefined && valorMax !== null) conditions.push(lte(patrimonioItems.valor, valorMax.toString()));
   if (dataInicio) conditions.push(gte(patrimonioItems.dataIncorporacao, new Date(dataInicio)));
   if (dataFim) conditions.push(lte(patrimonioItems.dataIncorporacao, new Date(dataFim)));
 
@@ -148,6 +157,7 @@ export async function getPatrimonioItems(filters: PatrimonioFilters = {}) {
     valor: patrimonioItems.valor,
     status: patrimonioItems.status,
     tipo: patrimonioItems.tipo,
+    andar: patrimonioItems.andar,
   };
 
   const orderCol = colMap[sortBy] ?? patrimonioItems.patrimonio;

@@ -97,6 +97,7 @@ export const patrimonioItems = mysqlTable("patrimonio_items", {
   valor: decimal("valor", { precision: 12, scale: 2 }),
   status: mysqlEnum("status", ["localizado", "nao_localizado"]).default("nao_localizado").notNull(),
   tipo: mysqlEnum("tipo", ["informatica", "mobiliario", "eletrodomestico", "veiculo", "outros"]).default("outros").notNull(),
+  andar: varchar("andar", { length: 64 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

@@ -143,6 +143,9 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
   const [setor, setSetor]             = useState<string>("");
   const [status, setStatus]           = useState<string>("");
   const [tipo, setTipo]               = useState<string>("");
+  const [andar, setAndar]             = useState<string>("");
+  const [valorMin, setValorMin]       = useState<string>("");
+  const [valorMax, setValorMax]       = useState<string>("");
   const [sortBy, setSortBy]           = useState<string>("patrimonio");
   const [sortDir, setSortDir]         = useState<"asc" | "desc">("asc");
   const [page, setPage]               = useState(1);
@@ -173,6 +176,9 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
       setor:    setor    || undefined,
       status:   effectiveStatus,
       tipo:     (tipo || undefined) as any,
+      andar:    andar    || undefined,
+      valorMin: valorMin ? Number(valorMin) : undefined,
+      valorMax: valorMax ? Number(valorMax) : undefined,
       sortBy,
       sortDir,
       page,
@@ -182,7 +188,7 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
   );
 
   const totalPages = data ? Math.ceil(data.total / pageSize) : 0;
-  const hasFilters = !!(search || setor || status || tipo);
+  const hasFilters = !!(search || setor || status || tipo || andar || valorMin || valorMax);
 
   const handleSearch = useCallback(() => {
     setSearch(searchInput);
@@ -191,7 +197,8 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
 
   const handleClearFilters = () => {
     setSearch(""); setSearchInput("");
-    setSetor(""); setStatus(""); setTipo("");
+    setSetor(""); setStatus(""); setTipo(""); setAndar("");
+    setValorMin(""); setValorMax("");
     setPage(1);
   };
 
@@ -266,41 +273,74 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-border">
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Setor</label>
-                <Select value={setor || "_all"} onValueChange={(v) => { setSetor(v === "_all" ? "" : v); setPage(1); }}>
-                  <SelectTrigger className="text-sm"><SelectValue placeholder="Todos os setores" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="_all">Todos os setores</SelectItem>
-                    {(setores ?? []).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+            <div className="space-y-3 pt-3 border-t border-border">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Setor</label>
+                  <Select value={setor || "_all"} onValueChange={(v) => { setSetor(v === "_all" ? "" : v); setPage(1); }}>
+                    <SelectTrigger className="text-sm"><SelectValue placeholder="Todos os setores" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="_all">Todos os setores</SelectItem>
+                      {(setores ?? []).map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Status</label>
+                  <Select value={status || "_all"} onValueChange={(v) => { setStatus(v === "_all" ? "" : v); setPage(1); }}>
+                    <SelectTrigger className="text-sm"><SelectValue placeholder="Todos os status" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="_all">Todos os status</SelectItem>
+                      <SelectItem value="localizado">Localizado</SelectItem>
+                      <SelectItem value="nao_localizado">Não Localizado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Tipo</label>
+                  <Select value={tipo || "_all"} onValueChange={(v) => { setTipo(v === "_all" ? "" : v); setPage(1); }}>
+                    <SelectTrigger className="text-sm"><SelectValue placeholder="Todos os tipos" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="_all">Todos os tipos</SelectItem>
+                      <SelectItem value="informatica">Informática</SelectItem>
+                      <SelectItem value="mobiliario">Mobiliário</SelectItem>
+                      <SelectItem value="eletrodomestico">Eletrodoméstico</SelectItem>
+                      <SelectItem value="veiculo">Veículo</SelectItem>
+                      <SelectItem value="outros">Outros</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Status</label>
-                <Select value={status || "_all"} onValueChange={(v) => { setStatus(v === "_all" ? "" : v); setPage(1); }}>
-                  <SelectTrigger className="text-sm"><SelectValue placeholder="Todos os status" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="_all">Todos os status</SelectItem>
-                    <SelectItem value="localizado">Localizado</SelectItem>
-                    <SelectItem value="nao_localizado">Não Localizado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Tipo</label>
-                <Select value={tipo || "_all"} onValueChange={(v) => { setTipo(v === "_all" ? "" : v); setPage(1); }}>
-                  <SelectTrigger className="text-sm"><SelectValue placeholder="Todos os tipos" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="_all">Todos os tipos</SelectItem>
-                    <SelectItem value="informatica">Informática</SelectItem>
-                    <SelectItem value="mobiliario">Mobiliário</SelectItem>
-                    <SelectItem value="eletrodomestico">Eletrodoméstico</SelectItem>
-                    <SelectItem value="veiculo">Veículo</SelectItem>
-                    <SelectItem value="outros">Outros</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Andar</label>
+                  <Input
+                    placeholder="Ex: 1º, 2º, Térreo..."
+                    value={andar}
+                    onChange={(e) => { setAndar(e.target.value); setPage(1); }}
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Valor Mínimo (R$)</label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    value={valorMin}
+                    onChange={(e) => { setValorMin(e.target.value); setPage(1); }}
+                    className="text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">Valor Máximo (R$)</label>
+                  <Input
+                    type="number"
+                    placeholder="999999"
+                    value={valorMax}
+                    onChange={(e) => { setValorMax(e.target.value); setPage(1); }}
+                    className="text-sm"
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -334,12 +374,13 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
             <table className="w-full detran-table" style={{ minWidth: 720 }}>
               <thead>
                 <tr>
-                  {/* Cabeçalhos com botões de ordenação */}
+                    {/* Cabeçalhos com botões de ordenação */}
                   {([
                     { key: "patrimonio", label: "Patrimônio", align: "left", w: "w-28" },
                     { key: "descricao",  label: "Descrição",  align: "left", w: "" },
                     { key: "setor",      label: "Setor",      align: "left", w: "w-36" },
                     { key: "local",      label: "Local",      align: "left", w: "w-36" },
+                    { key: "andar",      label: "Andar",      align: "left", w: "w-20" },
                     { key: "dataIncorporacao", label: "Data", align: "left", w: "w-24" },
                     { key: "valor",      label: "Valor",      align: "right", w: "w-28" },
                     { key: "tipo",       label: "Tipo",       align: "center", w: "w-28", noSort: true },
@@ -366,7 +407,7 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
                 {isLoading
                   ? [...Array(10)].map((_, i) => (
                       <tr key={i}>
-                        {[...Array(8)].map((_, j) => (
+                        {[...Array(9)].map((_, j) => (
                           <td key={j} className="px-4 py-3">
                             <div className="h-4 rounded bg-slate-100 animate-pulse" />
                           </td>
@@ -376,7 +417,7 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
                   : data?.items.length === 0
                   ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-12 text-center text-muted-foreground">
+                      <td colSpan={9} className="px-4 py-12 text-center text-muted-foreground">
                         <Search size={32} className="mx-auto mb-2 opacity-30" />
                         <p className="font-medium">Nenhum registro encontrado</p>
                         <p className="text-sm">Tente ajustar os filtros de busca</p>

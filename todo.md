@@ -197,3 +197,23 @@
 - [x] Seção 3: Itens (busca e seleção de patrimônios)
 - [x] Seção 4: Assinatura (signatário, cargo, ID funcional, observações)
 - [x] Dropdowns colapsáveis para melhor organização visual
+
+
+## Sprint v13 — Ordenação, Filtros Avançados e Domínio Customizado
+
+### Frontend — Aba Patrimônios (Ordenação e Filtros)
+- [x] Adicionar seletor de ordenação (ascendente, descendente, por valor, por andar, por número, alfabética)
+- [x] Implementar filtro expandido com múltiplas opções (setor, status, tipo, valor mín/máx, andar)
+- [x] Botão para limpar todos os filtros
+- [x] Indicador visual de ordenação (setas ascendente/descendente)
+
+### Backend — Suporte a Ordenação e Filtros
+- [x] Adicionar campo andar ao schema de patrimônio
+- [x] Adicionar parâmetros de ordenação ao trpc.patrimonio.list
+- [x] Adicionar parâmetros de filtro expandido (setor, status, tipo, valor, andar)
+- [x] Atualizar colMap para suportar ordenação por andar
+
+### Infraestrutura — Domínio Customizado
+- [x] Domínios configurados: moisescosta.org, www.moisescosta.org
+- [ ] Configurar subdomínio www.pat.moisescosta.org
+- [ ] Apontar www.pat.moisescosta.org para o dashboard
