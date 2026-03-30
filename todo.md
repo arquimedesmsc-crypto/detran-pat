@@ -217,3 +217,42 @@
 - [x] Domínios configurados: moisescosta.org, www.moisescosta.org
 - [ ] Configurar subdomínio www.pat.moisescosta.org
 - [ ] Apontar www.pat.moisescosta.org para o dashboard
+
+
+## Sprint v14 — Onboarding Completo do Sistema
+
+### Frontend — Página de Onboarding
+- [ ] Rota /onboarding com guias visuais dos principais recursos
+- [ ] Cards com ícones explicando: Dashboard, Patrimônios, Transferência, Relatórios, Admin
+- [ ] Botões "Começar" que levam para cada seção
+- [ ] Indicador de progresso (step 1/5, 2/5, etc)
+- [ ] Botão "Pular" para usuários experientes
+
+### Frontend — Tour Guiado (Spotlight)
+- [ ] Implementar biblioteca de spotlight (highlight de elementos)
+- [ ] Tour automático na primeira visita (pode ser desativado)
+- [ ] Guias contextuais: Dashboard → Patrimônios → Transferência → Relatórios
+- [ ] Tooltips explicativos em cada funcionalidade
+
+### Frontend — Página de Ajuda (Help)
+- [ ] Rota /ajuda com FAQ estruturado por seção
+- [ ] Vídeos em embed (YouTube ou hospedados) mostrando fluxos principais
+- [ ] Screenshots anotadas das principais telas
+- [ ] Busca dentro da FAQ
+- [ ] Links para contato/suporte
+
+### Frontend — Modais de Boas-vindas
+- [ ] Modal na primeira visita: "Bem-vindo ao DETRAN Patrimônio"
+- [ ] Dicas contextuais ao abrir cada seção pela primeira vez
+- [ ] Botão "Mostrar dica novamente" para usuários que fecharam
+- [ ] Armazenar preferências no localStorage (não mostrar mais)
+
+### Backend
+- [ ] Adicionar tabela `user_preferences` para armazenar onboarding_completed, tour_completed
+- [ ] Mutation: marcar onboarding como concluído
+- [ ] Query: verificar status do onboarding do usuário
+
+### Polimento
+- [ ] Animações suaves nas transições de onboarding
+- [ ] Responsivo para mobile (cards em coluna única)
+- [ ] Acessibilidade: ARIA labels, navegação por teclado

@@ -4,11 +4,13 @@ import {
   AlertTriangle,
   ArrowLeftRight,
   BarChart3,
+  BookOpen,
   CheckCircle2,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ClipboardList,
+  HelpCircle,
   LayoutDashboard,
   List,
   LogOut,
@@ -264,6 +266,12 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
 
         {/* Relatórios */}
         <NavItem path="/relatorios" label="Relatórios" icon={BarChart3} />
+
+        {/* Onboarding */}
+        <NavItem path="/onboarding" label="Guia de Boas-vindas" icon={BookOpen} />
+
+        {/* Ajuda */}
+        <NavItem path="/ajuda" label="Ajuda" icon={HelpCircle} />
 
         {/* Admin — apenas para administradores */}
         {user?.role === "admin" && (

@@ -17,6 +17,8 @@ import LevantamentoAnual from "@/pages/LevantamentoAnual";
 import Transferencia from "@/pages/Transferencia";
 import Admin from "@/pages/Admin";
 import Relatorios from "@/pages/Relatorios";
+import Onboarding from "@/pages/Onboarding";
+import Ajuda from "@/pages/Ajuda";
 import { useState } from "react";
 
 function Router() {
@@ -57,6 +59,12 @@ function Router() {
       </Route>
       <Route path="/relatorios">
         <ProtectedRoute><Relatorios /></ProtectedRoute>
+      </Route>
+      <Route path="/onboarding">
+        <ProtectedRoute><Onboarding /></ProtectedRoute>
+      </Route>
+      <Route path="/ajuda">
+        <ProtectedRoute><Ajuda /></ProtectedRoute>
       </Route>
 
       <Route path="/404" component={NotFound} />
