@@ -267,6 +267,8 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
         {/* Relatórios */}
         <NavItem path="/relatorios" label="Relatórios" icon={BarChart3} />
 
+        {/* Perfil */}
+        <NavItem path="/perfil" label="Meu Perfil" icon={User} />
         {/* Ajuda */}
         <NavItem path="/ajuda" label="Ajuda" icon={HelpCircle} />
 

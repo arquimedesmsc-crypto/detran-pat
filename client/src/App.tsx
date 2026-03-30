@@ -19,6 +19,7 @@ import Admin from "@/pages/Admin";
 import Relatorios from "@/pages/Relatorios";
 import Onboarding from "@/pages/Onboarding";
 import Ajuda from "@/pages/Ajuda";
+import Perfil from "@/pages/Perfil";
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 
@@ -87,6 +88,9 @@ function Router() {
       <Route path="/ajuda">
         <ProtectedRoute><Ajuda /></ProtectedRoute>
       </Route>
+      <Route path="/perfil">
+        <ProtectedRoute><Perfil /></ProtectedRoute>
+      </Route>
 
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
@@ -99,7 +103,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <ThemeProvider defaultTheme="light">
+      <ThemeProvider defaultTheme="light" switchable={true}>
         <AppAuthProvider>
           <TooltipProvider>
             <Toaster />

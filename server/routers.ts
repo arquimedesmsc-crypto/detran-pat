@@ -30,6 +30,8 @@ import {
   marcarLocalizado,
   updateAppUser,
   updateLevantamentoStatus,
+  getAppUserById,
+  updateAppUserProfile,
 } from "./db";
 import { storagePut } from "./storage";
 
@@ -334,6 +336,80 @@ export const appRouter = router({
         return foto;
       }),
   }),
-});
 
+  // ─── Perfil do Usuário ───────────────────────────────────────────────────────
+  perfil: router({
+    get: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload) throw new Error("Token inválido");
+        const user = await getAppUserById(payload.userId);
+        if (!user) throw new Error("Usuário não encontrado");
+        return {
+          id: user.id,
+          username: user.username,
+          displayName: user.displayName,
+          cargo: user.cargo,
+          idFuncional: user.idFuncional,
+          setor: user.setor,
+          email: user.email,
+          role: user.role,
+          createdAt: user.createdAt,
+          lastLogin: user.lastLogin,
+        };
+      }),
+
+    update: publicProcedure
+      .input(
+        z.object({
+          token: z.string(),
+          displayName: z.string().min(2).max(128).optional(),
+          cargo: z.string().max(128).optional(),
+          idFuncional: z.string().max(32).optional(),
+          setor: z.string().max(128).optional(),
+          email: z.string().email().optional().or(z.literal("")),
+          currentPassword: z.string().optional(),
+          newPassword: z.string().min(4).max(64).optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload) throw new Error("Token inválido");
+        const { token, currentPassword, newPassword, ...updateData } = input;
+        const result = await updateAppUserProfile(payload.userId, updateData, currentPassword, newPassword);
+        if (!result.success) throw new Error(result.error ?? "Erro ao atualizar perfil");
+        return { success: true };
+      }),
+
+    solicitarAlteracao: publicProcedure
+      .input(
+        z.object({
+          token: z.string(),
+          campo: z.string(),
+          valorAtual: z.string().optional(),
+          valorSolicitado: z.string(),
+          motivo: z.string().max(500).optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload) throw new Error("Token inválido");
+        await addSystemLog({
+          userId: payload.userId,
+          username: payload.username,
+          acao: "SOLICITACAO_ALTERACAO",
+          entidade: "perfil",
+          entidadeId: String(payload.userId),
+          detalhes: JSON.stringify({
+            campo: input.campo,
+            valorAtual: input.valorAtual,
+            valorSolicitado: input.valorSolicitado,
+            motivo: input.motivo,
+          }),
+        });
+        return { success: true, mensagem: "Solicitação enviada ao administrador" };
+      }),
+  }),
+});
 export type AppRouter = typeof appRouter;

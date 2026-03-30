@@ -814,3 +814,56 @@ export async function formatarPDF(items: any[], logoUrl?: string): Promise<Buffe
     });
   });
 }
+
+// ─── Atualizar perfil do usuário ───────────────────────────────────────────
+export async function updateAppUserProfile(
+  userId: number,
+  data: {
+    displayName?: string;
+    cargo?: string;
+    idFuncional?: string;
+    setor?: string;
+    email?: string;
+  },
+  currentPassword?: string,
+  newPassword?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const db = await getDb();
+    if (!db) return { success: false, error: "Database not available" };
+
+    if (newPassword) {
+      if (!currentPassword) {
+        return { success: false, error: "Senha atual obrigatoria para alterar a senha" };
+      }
+      const userRows = await db
+        .select({ passwordHash: appUsers.passwordHash })
+        .from(appUsers)
+        .where(eq(appUsers.id, userId))
+        .limit(1);
+      const user = userRows[0];
+      if (!user) return { success: false, error: "Usuario nao encontrado" };
+      const currentHash = hashPassword(currentPassword);
+      if (currentHash !== user.passwordHash) {
+        return { success: false, error: "Senha atual incorreta" };
+      }
+      await db.update(appUsers).set({ passwordHash: hashPassword(newPassword) }).where(eq(appUsers.id, userId));
+    }
+
+    const updateData: any = {};
+    if (data.displayName !== undefined) updateData.displayName = data.displayName;
+    if (data.cargo !== undefined) updateData.cargo = data.cargo;
+    if (data.idFuncional !== undefined) updateData.idFuncional = data.idFuncional;
+    if (data.setor !== undefined) updateData.setor = data.setor;
+    if (data.email !== undefined) updateData.email = data.email || null;
+
+    if (Object.keys(updateData).length > 0) {
+      await db.update(appUsers).set(updateData).where(eq(appUsers.id, userId));
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("updateAppUserProfile error:", err);
+    return { success: false, error: "Erro interno ao atualizar perfil" };
+  }
+}
