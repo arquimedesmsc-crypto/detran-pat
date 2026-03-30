@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import {
   AlertTriangle,
@@ -7,13 +7,18 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
   LayoutDashboard,
   List,
+  LogOut,
   Menu,
   Plus,
+  User,
   X,
 } from "lucide-react";
 import NovoPatrimonioModal from "./NovoPatrimonioModal";
+import { useAppAuth } from "@/contexts/AppAuthContext";
+import { toast } from "sonner";
 
 const DETRAN_ICON_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663443081896/MDXpDWKkLJQQcpGvzWTLe8/detran-icon-hq-TdvfPVr3p8pZjaYvubcmtk.png";
@@ -29,6 +34,7 @@ interface PatrimonioLayoutProps {
 
 export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
   const [location] = useLocation();
+  const { user, logout } = useAppAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [levantamentoOpen, setLevantamentoOpen] = useState(
@@ -37,11 +43,10 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
     location.startsWith("/nao-localizados")
   );
   const [novoModalOpen, setNovoModalOpen] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
-  // Fecha drawer mobile ao mudar de rota
   useEffect(() => { setMobileOpen(false); }, [location]);
 
-  // Expande submenu se estiver numa rota de levantamento
   useEffect(() => {
     if (
       location.startsWith("/patrimonio") ||
@@ -52,7 +57,6 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
     }
   }, [location]);
 
-  // Bloqueia scroll quando drawer mobile está aberto
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -62,6 +66,17 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
     location === "/patrimonio" ||
     location.startsWith("/localizados") ||
     location.startsWith("/nao-localizados");
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Sessão encerrada com sucesso.");
+    setConfirmLogout(false);
+  };
+
+  // Iniciais do usuário para o avatar
+  const initials = user?.displayName
+    ? user.displayName.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
+    : user?.username?.slice(0, 2).toUpperCase() ?? "U";
 
   function NavItem({
     path,
@@ -81,6 +96,9 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
           className={`flex items-center gap-3 px-4 py-2.5 mx-2 mb-0.5 rounded-lg cursor-pointer transition-all duration-150 ${
             isActive ? "sidebar-item-active" : "hover:bg-white/5"
           }`}
+          style={{
+            boxShadow: isActive ? "0 2px 8px rgba(27,138,90,0.25)" : "none",
+          }}
         >
           <Icon
             size={18}
@@ -134,7 +152,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
           <button
             onClick={() => { setNovoModalOpen(true); setMobileOpen(false); }}
             className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-white text-sm font-bold transition-all hover:opacity-90 active:scale-95"
-            style={{ background: "linear-gradient(135deg, #1a73c4, #1b8a5a)" }}
+            style={{ background: "linear-gradient(135deg, #1a73c4, #1b8a5a)", boxShadow: "0 4px 12px rgba(26,115,196,0.35)" }}
           >
             <Plus size={16} />
             Novo Patrimônio
@@ -157,16 +175,16 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
       {/* Navegação */}
       <nav className="flex-1 py-2 overflow-y-auto">
         {/* Dashboard */}
-        <NavItem path="/" label="Dashboard" icon={LayoutDashboard} exact />
+        <NavItem path="/dashboard" label="Dashboard" icon={LayoutDashboard} exact />
 
         {/* Levantamento — com submenu */}
         <div>
           <button
             onClick={() => !collapsed && setLevantamentoOpen((v) => !v)}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 mx-0 mb-0.5 rounded-none cursor-pointer transition-all duration-150 ${
+            className={`w-full flex items-center gap-3 px-4 py-2.5 mb-0.5 rounded-lg cursor-pointer transition-all duration-150 ${
               isLevantamentoActive && !levantamentoOpen ? "sidebar-item-active" : "hover:bg-white/5"
             }`}
-            style={{ margin: "0 8px", width: "calc(100% - 16px)", borderRadius: 8 }}
+            style={{ margin: "0 8px", width: "calc(100% - 16px)" }}
           >
             <List
               size={18}
@@ -202,14 +220,8 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                     location === "/patrimonio" ? "sidebar-item-active" : "hover:bg-white/5"
                   }`}
                 >
-                  <List
-                    size={15}
-                    style={{ color: location === "/patrimonio" ? "#1b8a5a" : SIDEBAR_MUTED }}
-                  />
-                  <span
-                    className="text-xs font-medium"
-                    style={{ color: location === "/patrimonio" ? "white" : SIDEBAR_TEXT }}
-                  >
+                  <List size={15} style={{ color: location === "/patrimonio" ? "#1b8a5a" : SIDEBAR_MUTED }} />
+                  <span className="text-xs font-medium" style={{ color: location === "/patrimonio" ? "white" : SIDEBAR_TEXT }}>
                     Todos os Bens
                   </span>
                 </div>
@@ -220,14 +232,8 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                     location === "/localizados" ? "sidebar-item-active" : "hover:bg-white/5"
                   }`}
                 >
-                  <CheckCircle2
-                    size={15}
-                    style={{ color: location === "/localizados" ? "#1b8a5a" : SIDEBAR_MUTED }}
-                  />
-                  <span
-                    className="text-xs font-medium"
-                    style={{ color: location === "/localizados" ? "white" : SIDEBAR_TEXT }}
-                  >
+                  <CheckCircle2 size={15} style={{ color: location === "/localizados" ? "#1b8a5a" : SIDEBAR_MUTED }} />
+                  <span className="text-xs font-medium" style={{ color: location === "/localizados" ? "white" : SIDEBAR_TEXT }}>
                     Localizados
                   </span>
                 </div>
@@ -238,14 +244,8 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                     location === "/nao-localizados" ? "sidebar-item-active" : "hover:bg-white/5"
                   }`}
                 >
-                  <AlertTriangle
-                    size={15}
-                    style={{ color: location === "/nao-localizados" ? "#d4a017" : SIDEBAR_MUTED }}
-                  />
-                  <span
-                    className="text-xs font-medium"
-                    style={{ color: location === "/nao-localizados" ? "white" : SIDEBAR_TEXT }}
-                  >
+                  <AlertTriangle size={15} style={{ color: location === "/nao-localizados" ? "#d4a017" : SIDEBAR_MUTED }} />
+                  <span className="text-xs font-medium" style={{ color: location === "/nao-localizados" ? "white" : SIDEBAR_TEXT }}>
                     Não Localizados
                   </span>
                 </div>
@@ -254,26 +254,45 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
           )}
         </div>
 
+        {/* Levantamento Anual */}
+        <NavItem path="/levantamento" label="Levantamento Anual" icon={ClipboardList} />
+
         {/* Gráficos */}
         <NavItem path="/graficos" label="Gráficos" icon={BarChart3} />
       </nav>
 
-      {/* Footer */}
-      <div className="px-4 py-3 border-t flex-shrink-0" style={{ borderColor: SIDEBAR_BORDER }}>
-        <div className="flex items-center gap-3">
-          <div
-            className="flex-shrink-0 flex items-center justify-center rounded-full"
-            style={{ width: 32, height: 32, background: "linear-gradient(135deg, #1a73c4, #1b8a5a)" }}
-          >
-            <LayoutDashboard size={16} className="text-white" />
-          </div>
-          {!collapsed && (
-            <div className="overflow-hidden">
-              <p className="text-xs font-medium text-white/80 truncate">DTIC / Patrimônio</p>
-              <p className="text-xs" style={{ color: "oklch(0.5 0.04 240)" }}>2025/2026</p>
+      {/* Footer com usuário e logout */}
+      <div className="px-3 py-3 border-t flex-shrink-0" style={{ borderColor: SIDEBAR_BORDER }}>
+        {!collapsed ? (
+          <div className="flex items-center gap-2">
+            {/* Avatar */}
+            <div
+              className="flex-shrink-0 flex items-center justify-center rounded-full text-white text-xs font-black"
+              style={{ width: 34, height: 34, background: "linear-gradient(135deg, #1a73c4, #1b8a5a)" }}
+            >
+              {initials}
             </div>
-          )}
-        </div>
+            <div className="flex-1 overflow-hidden">
+              <p className="text-xs font-bold text-white/90 truncate">{user?.displayName ?? user?.username}</p>
+              <p className="text-xs capitalize" style={{ color: SIDEBAR_MUTED }}>{user?.role ?? "usuário"}</p>
+            </div>
+            <button
+              onClick={() => setConfirmLogout(true)}
+              className="flex-shrink-0 p-1.5 rounded-lg hover:bg-red-500/20 transition-colors"
+              title="Sair"
+            >
+              <LogOut size={15} style={{ color: "#f87171" }} />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setConfirmLogout(true)}
+            className="w-full flex items-center justify-center py-2 rounded-lg hover:bg-red-500/20 transition-colors"
+            title="Sair"
+          >
+            <LogOut size={16} style={{ color: "#f87171" }} />
+          </button>
+        )}
       </div>
     </>
   );
@@ -335,7 +354,6 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
             <span className="font-black text-sm flex-1" style={{ color: "#1b4f72" }}>
               DETRAN-RJ Patrimônio
             </span>
-            {/* Botão Novo no mobile topbar */}
             <button
               onClick={() => setNovoModalOpen(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-bold"
@@ -357,6 +375,41 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
         open={novoModalOpen}
         onClose={() => setNovoModalOpen(false)}
       />
+
+      {/* Confirmação de logout */}
+      {confirmLogout && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+        >
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <LogOut className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h3 className="font-black text-gray-900">Sair do sistema?</h3>
+                <p className="text-sm text-gray-500">Sua sessão será encerrada.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirmLogout(false)}
+                className="flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-colors hover:bg-gray-50"
+                style={{ borderColor: "#e2e8f0", color: "#64748b" }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 py-2.5 rounded-xl text-white text-sm font-bold transition-colors bg-red-500 hover:bg-red-600"
+              >
+                Sair
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

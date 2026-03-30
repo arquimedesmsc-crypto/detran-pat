@@ -15,6 +15,13 @@
       "when": 1774543515293,
       "tag": "0001_old_zarda",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1774850020366,
+      "tag": "0002_clumsy_zarek",
+      "breakpoints": true
     }
   ]
 }

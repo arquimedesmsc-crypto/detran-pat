@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;0,700;0,900&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -214,13 +213,115 @@
   color: white;
 }
 
-/* ── KPI Card Hover ──────────────────────────────────────────────────────── */
+/* ── KPI Card 3D Hover ──────────────────────────────────────────────────── */
 .kpi-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 .kpi-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.22), 0 8px 16px rgba(0,0,0,0.12);
+}
+.kpi-card:active {
+  transform: translateY(-2px) scale(0.99);
+}
+
+/* ── Card 3D Destaque ────────────────────────────────────────────────────── */
+.card-3d {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+}
+.card-3d:hover {
+  transform: perspective(800px) rotateX(2deg) rotateY(-2deg) translateY(-4px);
+  box-shadow: 6px 16px 40px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ── Botão DETRAN Primário ───────────────────────────────────────────────── */
+.btn-detran {
+  background: linear-gradient(135deg, #1A73C4 0%, #1B8A5A 100%);
+  color: white;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 14px rgba(26,115,196,0.35);
+  position: relative;
+  overflow: hidden;
+}
+.btn-detran::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.btn-detran:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(26,115,196,0.45);
+}
+.btn-detran:hover::after { opacity: 1; }
+.btn-detran:active { transform: translateY(0) scale(0.98); }
+
+/* ── Botão Perigo ────────────────────────────────────────────────────────── */
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  color: white;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(220,38,38,0.3);
+}
+.btn-danger:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 20px rgba(220,38,38,0.4);
+}
+
+/* ── Fade-in animação ────────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.animate-fade-in-up-1 { animation-delay: 0.05s; }
+.animate-fade-in-up-2 { animation-delay: 0.1s; }
+.animate-fade-in-up-3 { animation-delay: 0.15s; }
+.animate-fade-in-up-4 { animation-delay: 0.2s; }
+.animate-fade-in-up-5 { animation-delay: 0.25s; }
+
+/* ── Shimmer loading ─────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── Modal backdrop blur ─────────────────────────────────────────────────── */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* ── Toast personalizado ─────────────────────────────────────────────────── */
+.toast-detran {
+  border-left: 4px solid #1a73c4;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
 /* ── Table Styles ────────────────────────────────────────────────────────── */

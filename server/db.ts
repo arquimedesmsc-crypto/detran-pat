@@ -331,3 +331,160 @@ export async function createPatrimonioItem(data: {
   }
   return null;
 }
+
+// ─── App Auth (JWT simplificado) ─────────────────────────────────────────────
+import { createHash } from "crypto";
+import { appUsers, levantamentoAnual, levantamentoFotos } from "../drizzle/schema";
+
+function hashPassword(password: string): string {
+  return createHash("sha256").update(password + ":detran2025").digest("hex");
+}
+
+export async function loginAppUser(username: string, password: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const hash = hashPassword(password);
+  const result = await db
+    .select()
+    .from(appUsers)
+    .where(and(eq(appUsers.username, username), eq(appUsers.passwordHash, hash), eq(appUsers.ativo, true)))
+    .limit(1);
+
+  if (!result[0]) return null;
+
+  // Atualizar lastLogin
+  await db.update(appUsers).set({ lastLogin: new Date() }).where(eq(appUsers.id, result[0].id));
+
+  return result[0];
+}
+
+export async function getAppUserById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(appUsers).where(eq(appUsers.id, id)).limit(1);
+  return result[0] ?? null;
+}
+
+// ─── Levantamento Anual ───────────────────────────────────────────────────────
+
+export async function getLevantamentoAnual(ano?: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const conditions = [];
+  if (ano) conditions.push(eq(levantamentoAnual.ano, ano));
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
+
+  return db
+    .select()
+    .from(levantamentoAnual)
+    .where(where)
+    .orderBy(desc(levantamentoAnual.dataRegistro));
+}
+
+export async function createLevantamentoItem(data: {
+  ano: number;
+  patrimonio: number;
+  descricao: string;
+  setor?: string;
+  local?: string;
+  status?: "localizado" | "nao_localizado" | "em_verificacao";
+  tipo?: "informatica" | "mobiliario" | "eletrodomestico" | "veiculo" | "outros";
+  observacao?: string;
+  responsavel?: string;
+  createdBy?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(levantamentoAnual).values({
+    ano: data.ano,
+    patrimonio: data.patrimonio,
+    descricao: data.descricao,
+    setor: data.setor,
+    local: data.local,
+    status: data.status ?? "em_verificacao",
+    tipo: data.tipo ?? "outros",
+    observacao: data.observacao,
+    responsavel: data.responsavel,
+    createdBy: data.createdBy,
+  });
+
+  const insertId = (result as any)[0]?.insertId;
+  if (insertId) {
+    const created = await db
+      .select()
+      .from(levantamentoAnual)
+      .where(eq(levantamentoAnual.id, insertId))
+      .limit(1);
+    return created[0] ?? null;
+  }
+  return null;
+}
+
+export async function updateLevantamentoStatus(id: number, status: "localizado" | "nao_localizado" | "em_verificacao") {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(levantamentoAnual).set({ status }).where(eq(levantamentoAnual.id, id));
+}
+
+export async function deleteLevantamentoItem(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  // Deletar fotos primeiro
+  await db.delete(levantamentoFotos).where(eq(levantamentoFotos.levantamentoId, id));
+  await db.delete(levantamentoAnual).where(eq(levantamentoAnual.id, id));
+}
+
+export async function addLevantamentoFoto(data: {
+  levantamentoId: number;
+  url: string;
+  thumbUrl?: string;
+  fileKey: string;
+  mimeType?: string;
+  tamanhoBytes?: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(levantamentoFotos).values({
+    levantamentoId: data.levantamentoId,
+    url: data.url,
+    thumbUrl: data.thumbUrl,
+    fileKey: data.fileKey,
+    mimeType: data.mimeType ?? "image/jpeg",
+    tamanhoBytes: data.tamanhoBytes,
+  });
+
+  const insertId = (result as any)[0]?.insertId;
+  if (insertId) {
+    const created = await db
+      .select()
+      .from(levantamentoFotos)
+      .where(eq(levantamentoFotos.id, insertId))
+      .limit(1);
+    return created[0] ?? null;
+  }
+  return null;
+}
+
+export async function getLevantamentoFotos(levantamentoId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select()
+    .from(levantamentoFotos)
+    .where(eq(levantamentoFotos.levantamentoId, levantamentoId))
+    .orderBy(asc(levantamentoFotos.createdAt));
+}
+
+export async function getLevantamentoAnosDisponiveis() {
+  const db = await getDb();
+  if (!db) return [];
+  const result = await db
+    .selectDistinct({ ano: levantamentoAnual.ano })
+    .from(levantamentoAnual)
+    .orderBy(desc(levantamentoAnual.ano));
+  return result.map((r) => r.ano);
+}

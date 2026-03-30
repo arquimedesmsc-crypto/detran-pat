@@ -64,7 +64,7 @@ function KPICard({
   note?: string;
 }) {
   return (
-    <div className={`kpi-card rounded-xl p-4 text-white shadow-lg ${gradient} flex flex-col gap-2`}>
+    <div className={`kpi-card card-3d rounded-xl p-4 text-white shadow-lg ${gradient} flex flex-col gap-2`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wider text-white/70 mb-1 leading-tight">
@@ -128,7 +128,7 @@ export default function Dashboard() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* ── Page Header ── */}
-      <div className="detran-gradient rounded-xl p-5 text-white shadow-lg">
+      <div className="detran-gradient rounded-xl p-5 text-white shadow-lg animate-fade-in-up">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 flex-shrink-0">
             <Layers size={26} className="text-white" />
@@ -145,7 +145,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── SEÇÃO 1: Contagens ── */}
-      <div>
+      <div className="animate-fade-in-up animate-fade-in-up-1">
         <SectionHeader
           title="Quantitativo do Acervo"
           subtitle="Total de bens registrados no levantamento patrimonial"
@@ -186,7 +186,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── SEÇÃO 2: Valores ── */}
-      <div>
+      <div className="animate-fade-in-up animate-fade-in-up-2">
         <SectionHeader
           title="Valores Declarados"
           subtitle="Referência: apenas bens não localizados possuem valor declarado na planilha fonte"
@@ -272,7 +272,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── SEÇÃO 3: Tipo + Status ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 animate-fade-in-up animate-fade-in-up-3">
         {/* Distribuição por Tipo */}
         <div className="bg-white rounded-xl shadow-sm border border-border p-5">
           <SectionHeader title="Distribuição por Tipo de Bem" />
@@ -385,7 +385,7 @@ export default function Dashboard() {
       </div>
 
       {/* ── SEÇÃO 4: Gráfico por Setor ── */}
-      <div className="bg-white rounded-xl shadow-sm border border-border p-5">
+      <div className="bg-white rounded-xl shadow-sm border border-border p-5 animate-fade-in-up animate-fade-in-up-4">
         <SectionHeader
           title="Top 10 Setores por Quantidade de Itens"
           subtitle="Distribuição dos bens patrimoniais por setor responsável"

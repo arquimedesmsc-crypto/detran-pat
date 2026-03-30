@@ -73,3 +73,37 @@
 - [x] Corrigir repositório GitHub (repositório privado, push forcável com checkpoint)
 - [x] Corrigir @import Roboto fora de ordem no CSS
 - [x] Validar correção do status vazio na listagem
+
+## Sprint v9 — Login JWT, Levantamento Anual, Polimento Visual
+
+### Backend
+- [x] Schema: tabela `app_users` (login simplificado, sem Manus OAuth)
+- [x] Schema: tabela `levantamento_anual` e `levantamento_fotos`
+- [x] Router: auth.login / auth.me / auth.logout (JWT simples)
+- [x] Seed: usuários admin, moises.costa, pedro.bizarelli (senha 123)
+- [x] Router: levantamento CRUD (criar, listar, editar, excluir)
+- [x] Router: upload de imagem (S3), otimização e thumbnail
+
+### Frontend — Login
+- [x] Tela de login DETRAN-RJ (nova home, gradiente, logo, formulário)
+- [x] Contexto de autenticação local (JWT no localStorage)
+- [x] Proteção de rotas (redirect para /login se não autenticado)
+- [x] Header com nome do usuário logado e botão logout
+
+### Frontend — Levantamento Anual
+- [x] Página /levantamento-anual com seletor de ano
+- [x] Formulário de novo item com upload de foto (câmera + galeria)
+- [x] Visualização de fotos em modal/lightbox
+- [x] Otimização de imagem no frontend antes do upload
+
+### Frontend — Polimento Visual
+- [x] Cards com efeito 3D (transform perspective, hover lift)
+- [x] Transições suaves em todos os cards (200ms ease)
+- [x] Sombras coloridas nos cards KPI (box-shadow com cor do card)
+- [x] Detalhes gráficos: gradiente nos ícones, bordas animadas
+- [x] Diálogos de confirmação para ações importantes
+- [x] Identidade visual consistente em todos os botões e menus
+- [x] Micro-animações: hover, focus, active states
+
+### Skill
+- [x] Criar skill detran-ui-components com padrões de botões, cards, telas (integrado ao detran-design-system)
