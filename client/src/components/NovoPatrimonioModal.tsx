@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
-import { Building2, Calendar, DollarSign, Hash, MapPin, Package, Tag, X } from "lucide-react";
+import { Building2, Calendar, DollarSign, Hash, MapPin, Package, Tag, X, Upload } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -51,6 +51,8 @@ export default function NovoPatrimonioModal({ open, onClose, onSuccess }: Props)
   const [tipo, setTipo] = useState("outros");
   const [status, setStatus] = useState("nao_localizado");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [imagemPreview, setImagemPreview] = useState<string | null>(null);
+  const [imagemFile, setImagemFile] = useState<File | null>(null);
 
   const { data: setores } = trpc.patrimonio.setores.useQuery();
 
@@ -69,12 +71,30 @@ export default function NovoPatrimonioModal({ open, onClose, onSuccess }: Props)
       toast.error("Erro ao registrar patrimônio", { description: err.message });
     },
   });
-
   function handleReset() {
     setPatrimonio(""); setDescricao(""); setSetor("");
     setLocal(""); setData(""); setValor("");
     setTipo("outros"); setStatus("nao_localizado");
     setErrors({});
+    setImagemPreview(null);
+    setImagemFile(null);
+  }
+
+  function handleImageSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith("image/")) {
+      toast.error("Selecione uma imagem válida");
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setImagemPreview(event.target?.result as string);
+      setImagemFile(file);
+    };
+    reader.readAsDataURL(file);
   }
 
   function validate() {
@@ -155,6 +175,39 @@ export default function NovoPatrimonioModal({ open, onClose, onSuccess }: Props)
         {/* Formulário */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto">
           <div className="px-5 py-4 space-y-4">
+
+            {/* Upload de Imagem */}
+            <div>
+              <FieldLabel>Foto do Bem (Opcional)</FieldLabel>
+              <div className="relative">
+                {imagemPreview ? (
+                  <div className="relative w-full h-40 rounded-lg overflow-hidden bg-slate-100 border-2 border-blue-300">
+                    <img src={imagemPreview} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => { setImagemPreview(null); setImagemFile(null); }}
+                      className="absolute top-2 right-2 flex items-center justify-center w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full h-40 rounded-lg border-2 border-dashed border-slate-300 hover:border-blue-400 hover:bg-blue-50/30 transition-all cursor-pointer bg-slate-50">
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <Upload size={24} className="text-slate-400 mb-2" />
+                      <p className="text-xs font-semibold text-slate-600">Clique para adicionar foto</p>
+                      <p className="text-xs text-slate-500 mt-0.5">PNG, JPG ou GIF (máx. 5MB)</p>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
 
             {/* Número do Patrimônio */}
             <div>

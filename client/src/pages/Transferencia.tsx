@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import PatrimonioLayout from "@/components/PatrimonioLayout";
 import { trpc } from "@/lib/trpc";
 import { useAppAuth } from "@/contexts/AppAuthContext";
@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Building2,
   CheckCircle2,
+  ChevronDown,
   ClipboardList,
   FileText,
   Hash,
@@ -48,7 +49,9 @@ function gerarProtocolo(): string {
 export default function Transferencia() {
   const { user } = useAppAuth();
   const [setorOrigem, setSetorOrigem] = useState("");
+  const [localOrigem, setLocalOrigem] = useState("");
   const [setorDestino, setSetorDestino] = useState("");
+  const [localDestino, setLocalDestino] = useState("");
   const [responsavelNome, setResponsavelNome] = useState(user?.displayName ?? "");
   const [responsavelCargo, setResponsavelCargo] = useState("");
   const [responsavelIdFuncional, setResponsavelIdFuncional] = useState("");
@@ -56,17 +59,20 @@ export default function Transferencia() {
   const [itens, setItens] = useState<ItemTransferencia[]>([]);
   const [searchPatrimonio, setSearchPatrimonio] = useState("");
   const [searchResults, setSearchResults] = useState<ItemTransferencia[]>([]);
-  const [searching, setSearching] = useState(false);
   const [protocolo] = useState(gerarProtocolo);
 
-  const { data: setores } = trpc.patrimonio.setores.useQuery();
-  const { data: patrimonioList } = trpc.patrimonio.list.useQuery({
-    search: searchPatrimonio,
-    pageSize: 10,
-    page: 1,
-  }, { enabled: searchPatrimonio.length >= 2 });
+  // Dropdowns
+  const [origemOpen, setOrigemOpen] = useState(true);
+  const [destinoOpen, setDestinoOpen] = useState(true);
+  const [itensOpen, setItensOpen] = useState(true);
+  const [assinaturaOpen, setAssinaturaOpen] = useState(true);
 
-  // Busca de patrimônio
+  const { data: setores } = trpc.patrimonio.setores.useQuery();
+  const { data: patrimonioList } = trpc.patrimonio.list.useQuery(
+    { search: searchPatrimonio, pageSize: 10, page: 1 },
+    { enabled: searchPatrimonio.length >= 2 }
+  );
+
   const handleSearch = (v: string) => {
     setSearchPatrimonio(v);
     if (v.length >= 2 && patrimonioList?.items) {
@@ -112,8 +118,11 @@ export default function Transferencia() {
 
     const now = new Date();
     const dataHora = now.toLocaleString("pt-BR", {
-      day: "2-digit", month: "long", year: "numeric",
-      hour: "2-digit", minute: "2-digit",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
     const dataSimples = now.toLocaleDateString("pt-BR");
 
@@ -147,7 +156,6 @@ export default function Transferencia() {
             body { font-family: 'Roboto', Arial, sans-serif; background: white; color: #1e293b; font-size: 12px; }
             .page { max-width: 21cm; margin: 0 auto; padding: 1.5cm; }
 
-            /* Cabeçalho */
             .header { display: flex; align-items: center; gap: 16px; padding: 16px 20px; border-radius: 12px; margin-bottom: 20px;
               background: linear-gradient(135deg, #1B4F72 0%, #1A73C4 55%, #1B8A5A 100%); }
             .header-logo { width: 52px; height: 52px; background: white; border-radius: 10px; padding: 6px; flex-shrink: 0; }
@@ -158,7 +166,6 @@ export default function Transferencia() {
             .header-right .doc-title { color: white; font-size: 13px; font-weight: 700; }
             .header-right .protocolo { color: rgba(255,255,255,0.85); font-size: 10px; margin-top: 3px; font-family: monospace; }
 
-            /* Seções */
             .section { margin-bottom: 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
             .section-title { background: linear-gradient(90deg, #1B4F72, #1A73C4); color: white; padding: 7px 14px;
               font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
@@ -172,13 +179,11 @@ export default function Transferencia() {
             .setor-box .value { font-size: 13px; font-weight: 700; color: #1B4F72; margin-top: 3px; }
             .arrow-icon { font-size: 20px; color: #1A73C4; font-weight: 900; flex-shrink: 0; }
 
-            /* Tabela de itens */
             .items-table { width: 100%; border-collapse: collapse; }
             .items-table thead tr { background: linear-gradient(90deg, #1B4F72, #1A73C4); }
             .items-table thead th { color: white; padding: 8px 10px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
             .items-count { display: inline-block; background: #1A73C4; color: white; border-radius: 20px; padding: 2px 10px; font-size: 11px; font-weight: 700; margin-left: 8px; }
 
-            /* Assinaturas */
             .assinaturas { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
             .assinatura-box { border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 12px; }
             .assinatura-box .title { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px; }
@@ -186,11 +191,9 @@ export default function Transferencia() {
             .assinatura-line p { font-size: 10px; color: #475569; }
             .assinatura-line .nome { font-weight: 700; color: #1e293b; font-size: 11px; }
 
-            /* Rodapé */
             .footer { margin-top: 20px; padding-top: 12px; border-top: 1.5px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
             .footer p { font-size: 9px; color: #94a3b8; }
 
-            /* Observação */
             .obs-box { background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 8px; padding: 10px 12px; font-size: 11px; color: #78350f; }
 
             @media print {
@@ -202,7 +205,6 @@ export default function Transferencia() {
         <body>
           <div class="page">
 
-            <!-- Cabeçalho -->
             <div class="header">
               <div class="header-logo">
                 <img src="${DETRAN_ICON_URL}" alt="DETRAN-RJ" />
@@ -219,7 +221,6 @@ export default function Transferencia() {
               </div>
             </div>
 
-            <!-- Setores -->
             <div class="section">
               <div class="section-title">Movimentação de Setor</div>
               <div class="section-body">
@@ -227,17 +228,18 @@ export default function Transferencia() {
                   <div class="setor-box">
                     <div class="label">Setor de Origem</div>
                     <div class="value">${setorOrigem}</div>
+                    ${localOrigem ? `<div style="font-size:10px;color:#64748b;margin-top:4px">${localOrigem}</div>` : ""}
                   </div>
                   <div class="arrow-icon">→</div>
                   <div class="setor-box" style="border-color:#1b8a5a40;background:#f0fdf4">
                     <div class="label">Setor de Destino</div>
                     <div class="value" style="color:#1b8a5a">${setorDestino}</div>
+                    ${localDestino ? `<div style="font-size:10px;color:#64748b;margin-top:4px">${localDestino}</div>` : ""}
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Responsável -->
             <div class="section">
               <div class="section-title">Responsável pela Transferência</div>
               <div class="section-body">
@@ -262,7 +264,6 @@ export default function Transferencia() {
               </div>
             </div>
 
-            <!-- Itens -->
             <div class="section">
               <div class="section-title">
                 Bens Patrimoniais Transferidos
@@ -286,7 +287,6 @@ export default function Transferencia() {
             </div>
 
             ${observacao ? `
-            <!-- Observações -->
             <div class="section">
               <div class="section-title">Observações</div>
               <div class="section-body">
@@ -294,7 +294,6 @@ export default function Transferencia() {
               </div>
             </div>` : ""}
 
-            <!-- Assinaturas -->
             <div class="assinaturas">
               <div class="assinatura-box">
                 <div class="title">Responsável pela Entrega</div>
@@ -314,7 +313,6 @@ export default function Transferencia() {
               </div>
             </div>
 
-            <!-- Rodapé -->
             <div class="footer">
               <p>DETRAN-RJ · DTIC / Divisão de Patrimônio · Levantamento Patrimonial 2025/2026</p>
               <p>Protocolo: ${protocolo} · Emitido em ${dataHora}</p>
@@ -331,7 +329,7 @@ export default function Transferencia() {
 
   return (
     <PatrimonioLayout>
-      <div className="p-4 md:p-6 space-y-5 max-w-4xl mx-auto">
+      <div className="p-4 md:p-6 space-y-4 max-w-4xl mx-auto">
 
         {/* Header */}
         <div
@@ -346,243 +344,245 @@ export default function Transferencia() {
               <h1 className="text-xl sm:text-2xl font-black leading-tight">Guia de Transferência</h1>
               <p className="text-white/70 text-sm mt-0.5">Protocolo: <span className="font-mono font-bold text-white">{protocolo}</span></p>
             </div>
-            <div className="ml-auto hidden sm:block">
-              <span className="text-xs text-white/60">Emitente</span>
-              <p className="text-sm font-bold text-white">{user?.displayName ?? user?.username}</p>
-            </div>
           </div>
         </div>
 
-        {/* Formulário */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-          {/* Setor de Origem */}
-          <div className="bg-white rounded-xl border border-border shadow-sm p-4">
-            <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#1b4f72" }}>
-              <Building2 size={14} />
-              Setor de Origem <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              list="setores-list"
-              value={setorOrigem}
-              onChange={(e) => setSetorOrigem(e.target.value)}
-              placeholder="Ex: DTIC / Informática"
-              className="w-full px-3 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400"
-            />
-            <datalist id="setores-list">
-              {(setores ?? []).map((s) => (
-                <option key={s} value={s} />
-              ))}
-            </datalist>
-          </div>
-
-          {/* Setor de Destino */}
-          <div className="bg-white rounded-xl border border-border shadow-sm p-4">
-            <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#1b8a5a" }}>
-              <Building2 size={14} />
-              Setor de Destino <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              list="setores-list"
-              value={setorDestino}
-              onChange={(e) => setSetorDestino(e.target.value)}
-              placeholder="Ex: Gabinete / Presidência"
-              className="w-full px-3 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30 focus:border-green-400"
-            />
-          </div>
+        {/* Seção 1: Origem */}
+        <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+          <button
+            onClick={() => setOrigemOpen(!origemOpen)}
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors"
+            style={{ borderBottom: origemOpen ? "1px solid #e2e8f0" : "none" }}
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ background: "#1b4f7220" }}>
+              <Building2 size={18} style={{ color: "#1b4f72" }} />
+            </div>
+            <span className="text-sm font-bold text-slate-900 flex-1 text-left">Setor de Origem</span>
+            <ChevronDown size={18} style={{ transform: origemOpen ? "rotate(180deg)" : "", transition: "transform 200ms" }} />
+          </button>
+          {origemOpen && (
+            <div className="px-5 py-4 space-y-3 bg-slate-50">
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">Setor *</label>
+                <input
+                  type="text"
+                  list="setores-list"
+                  value={setorOrigem}
+                  onChange={(e) => setSetorOrigem(e.target.value)}
+                  placeholder="Ex: DTIC / Informática"
+                  className="w-full px-3 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                />
+                <datalist id="setores-list">
+                  {(setores ?? []).map((s) => (
+                    <option key={s} value={s} />
+                  ))}
+                </datalist>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">Local Físico (Opcional)</label>
+                <input
+                  type="text"
+                  value={localOrigem}
+                  onChange={(e) => setLocalOrigem(e.target.value)}
+                  placeholder="Ex: Sala 201, Almoxarifado..."
+                  className="w-full px-3 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Responsável */}
-        <div className="bg-white rounded-xl border border-border shadow-sm p-4">
-          <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#1b4f72" }}>
-            <User size={14} />
-            Responsável pela Transferência <span className="text-red-500">*</span>
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <label className="text-xs text-slate-500 font-medium mb-1 block">Nome Completo *</label>
-              <input
-                type="text"
-                value={responsavelNome}
-                onChange={(e) => setResponsavelNome(e.target.value)}
-                placeholder="Nome do responsável"
-                className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
+        {/* Seção 2: Destino */}
+        <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+          <button
+            onClick={() => setDestinoOpen(!destinoOpen)}
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors"
+            style={{ borderBottom: destinoOpen ? "1px solid #e2e8f0" : "none" }}
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ background: "#1b8a5a20" }}>
+              <Building2 size={18} style={{ color: "#1b8a5a" }} />
             </div>
-            <div>
-              <label className="text-xs text-slate-500 font-medium mb-1 block">Cargo / Função</label>
-              <input
-                type="text"
-                value={responsavelCargo}
-                onChange={(e) => setResponsavelCargo(e.target.value)}
-                placeholder="Ex: Assistente Técnico"
-                className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
+            <span className="text-sm font-bold text-slate-900 flex-1 text-left">Setor de Destino</span>
+            <ChevronDown size={18} style={{ transform: destinoOpen ? "rotate(180deg)" : "", transition: "transform 200ms" }} />
+          </button>
+          {destinoOpen && (
+            <div className="px-5 py-4 space-y-3 bg-slate-50">
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">Setor *</label>
+                <input
+                  type="text"
+                  list="setores-list"
+                  value={setorDestino}
+                  onChange={(e) => setSetorDestino(e.target.value)}
+                  placeholder="Ex: Gabinete / Presidência"
+                  className="w-full px-3 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">Local Físico (Opcional)</label>
+                <input
+                  type="text"
+                  value={localDestino}
+                  onChange={(e) => setLocalDestino(e.target.value)}
+                  placeholder="Ex: Sala 301, Arquivo..."
+                  className="w-full px-3 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-green-500/30"
+                />
+              </div>
             </div>
-            <div>
-              <label className="text-xs text-slate-500 font-medium mb-1 block">ID Funcional</label>
-              <input
-                type="text"
-                value={responsavelIdFuncional}
-                onChange={(e) => setResponsavelIdFuncional(e.target.value)}
-                placeholder="Ex: 5028399-5"
-                className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-              />
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Busca e adição de itens */}
-        <div className="bg-white rounded-xl border border-border shadow-sm p-4">
-          <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest mb-3" style={{ color: "#1b4f72" }}>
-            <Hash size={14} />
-            Bens Patrimoniais <span className="text-red-500">*</span>
+        {/* Seção 3: Itens */}
+        <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+          <button
+            onClick={() => setItensOpen(!itensOpen)}
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors"
+            style={{ borderBottom: itensOpen ? "1px solid #e2e8f0" : "none" }}
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ background: "#1a73c420" }}>
+              <Hash size={18} style={{ color: "#1a73c4" }} />
+            </div>
+            <span className="text-sm font-bold text-slate-900 flex-1 text-left">Bens Patrimoniais</span>
             {itens.length > 0 && (
-              <span
-                className="ml-auto inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold text-white"
-                style={{ background: "#1a73c4" }}
-              >
-                {itens.length} {itens.length === 1 ? "item" : "itens"}
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold text-white" style={{ background: "#1a73c4" }}>
+                {itens.length}
               </span>
             )}
-          </label>
+            <ChevronDown size={18} style={{ transform: itensOpen ? "rotate(180deg)" : "", transition: "transform 200ms" }} />
+          </button>
+          {itensOpen && (
+            <div className="px-5 py-4 space-y-3 bg-slate-50">
+              <div className="relative">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchPatrimonio}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  placeholder="Buscar por número ou descrição..."
+                  className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                />
+              </div>
 
-          {/* Campo de busca */}
-          <div className="relative mb-3">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchPatrimonio}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Buscar por número ou descrição do patrimônio..."
-              className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
-            />
-            {searchPatrimonio && (
-              <button
-                onClick={() => { setSearchPatrimonio(""); setSearchResults([]); }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-              >
-                <X size={14} />
-              </button>
-            )}
-          </div>
-
-          {/* Resultados da busca */}
-          {searchResults.length > 0 && (
-            <div className="mb-3 border border-border rounded-lg overflow-hidden shadow-sm">
-              {searchResults.slice(0, 5).map((item) => (
-                <button
-                  key={item.patrimonio}
-                  onClick={() => addItem(item)}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors border-b border-border last:border-0 text-left"
-                >
-                  <div
-                    className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-lg text-white text-xs font-black"
-                    style={{ background: "linear-gradient(135deg, #1a73c4, #1b4f72)" }}
-                  >
-                    <Plus size={14} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-blue-700 font-mono">#{item.patrimonio}</p>
-                    <p className="text-xs text-slate-500 truncate">{item.descricao}</p>
-                  </div>
-                  <span className="text-xs text-slate-400 flex-shrink-0">{TIPO_LABELS[item.tipo] ?? item.tipo}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Lista de itens adicionados */}
-          {itens.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8 text-center rounded-lg border-2 border-dashed border-slate-200">
-              <FileText size={32} className="text-slate-300 mb-2" />
-              <p className="text-sm text-slate-400 font-medium">Nenhum item adicionado</p>
-              <p className="text-xs text-slate-300 mt-1">Busque pelo número ou descrição do patrimônio acima</p>
-            </div>
-          ) : (
-            <div className="space-y-1.5">
-              {itens.map((item, idx) => (
-                <div
-                  key={item.patrimonio}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-border bg-slate-50/80"
-                >
-                  <span
-                    className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full text-xs font-black text-white"
-                    style={{ background: "#1a73c4" }}
-                  >
-                    {idx + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <span className="font-mono font-black text-sm text-blue-700">#{item.patrimonio}</span>
-                    <span className="text-xs text-slate-500 ml-2 truncate">{item.descricao}</span>
-                  </div>
-                  <span className="text-xs text-slate-400 flex-shrink-0 hidden sm:block">{TIPO_LABELS[item.tipo] ?? item.tipo}</span>
-                  <button
-                    onClick={() => removeItem(item.patrimonio)}
-                    className="flex-shrink-0 p-1 rounded-lg hover:bg-red-100 transition-colors text-slate-400 hover:text-red-500"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+              {searchResults.length > 0 && (
+                <div className="border border-border rounded-lg overflow-hidden shadow-sm max-h-48 overflow-y-auto">
+                  {searchResults.slice(0, 5).map((item) => (
+                    <button
+                      key={item.patrimonio}
+                      onClick={() => addItem(item)}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-blue-50 transition-colors border-b border-border last:border-0 text-left"
+                    >
+                      <Plus size={14} className="text-blue-600 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-blue-700 font-mono">#{item.patrimonio}</p>
+                        <p className="text-xs text-slate-500 truncate">{item.descricao}</p>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {itens.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-center rounded-lg border-2 border-dashed border-slate-200">
+                  <FileText size={32} className="text-slate-300 mb-2" />
+                  <p className="text-sm text-slate-500">Nenhum item adicionado</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {itens.map((item) => (
+                    <div key={item.patrimonio} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-border hover:border-blue-300 transition-colors">
+                      <CheckCircle2 size={16} className="text-green-600 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-blue-700 font-mono">#{item.patrimonio}</p>
+                        <p className="text-xs text-slate-500 truncate">{item.descricao}</p>
+                      </div>
+                      <button
+                        onClick={() => removeItem(item.patrimonio)}
+                        className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg hover:bg-red-100 text-red-600 transition-colors"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        {/* Observações */}
-        <div className="bg-white rounded-xl border border-border shadow-sm p-4">
-          <label className="flex items-center gap-2 text-xs font-black uppercase tracking-widest mb-2" style={{ color: "#1b4f72" }}>
-            <FileText size={14} />
-            Observações (opcional)
-          </label>
-          <textarea
-            value={observacao}
-            onChange={(e) => setObservacao(e.target.value)}
-            rows={3}
-            placeholder="Informações adicionais sobre a transferência..."
-            className="w-full px-3 py-2.5 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 resize-none"
-          />
+        {/* Seção 4: Assinatura */}
+        <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+          <button
+            onClick={() => setAssinaturaOpen(!assinaturaOpen)}
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-slate-50 transition-colors"
+            style={{ borderBottom: assinaturaOpen ? "1px solid #e2e8f0" : "none" }}
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg flex-shrink-0" style={{ background: "#1b4f7220" }}>
+              <User size={18} style={{ color: "#1b4f72" }} />
+            </div>
+            <span className="text-sm font-bold text-slate-900 flex-1 text-left">Assinatura e Observações</span>
+            <ChevronDown size={18} style={{ transform: assinaturaOpen ? "rotate(180deg)" : "", transition: "transform 200ms" }} />
+          </button>
+          {assinaturaOpen && (
+            <div className="px-5 py-4 space-y-3 bg-slate-50">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">Nome Completo *</label>
+                  <input
+                    type="text"
+                    value={responsavelNome}
+                    onChange={(e) => setResponsavelNome(e.target.value)}
+                    placeholder="Nome do responsável"
+                    className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">Cargo / Função</label>
+                  <input
+                    type="text"
+                    value={responsavelCargo}
+                    onChange={(e) => setResponsavelCargo(e.target.value)}
+                    placeholder="Ex: Assistente Técnico"
+                    className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600 mb-1 block">ID Funcional</label>
+                  <input
+                    type="text"
+                    value={responsavelIdFuncional}
+                    onChange={(e) => setResponsavelIdFuncional(e.target.value)}
+                    placeholder="Ex: 5028399-5"
+                    className="w-full px-3 py-2 rounded-lg border border-border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-600 mb-1 block">Observações (Opcional)</label>
+                <textarea
+                  value={observacao}
+                  onChange={(e) => setObservacao(e.target.value)}
+                  placeholder="Adicione observações relevantes sobre a transferência..."
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-lg border border-border text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Preview da transferência */}
-        {canGenerate && (
-          <div
-            className="rounded-xl p-4 border-2"
-            style={{ background: "#f0fdf4", borderColor: "#86efac" }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <CheckCircle2 size={18} style={{ color: "#16a34a" }} />
-              <span className="text-sm font-bold" style={{ color: "#15803d" }}>Pronto para gerar a guia</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <div className="flex-1 bg-white rounded-lg px-3 py-2 border border-green-200">
-                <p className="text-xs text-slate-500 font-medium">De</p>
-                <p className="font-bold text-slate-700 truncate">{setorOrigem}</p>
-              </div>
-              <ArrowRight size={18} style={{ color: "#1a73c4" }} className="flex-shrink-0" />
-              <div className="flex-1 bg-white rounded-lg px-3 py-2 border border-green-200">
-                <p className="text-xs text-slate-500 font-medium">Para</p>
-                <p className="font-bold text-slate-700 truncate">{setorDestino}</p>
-              </div>
-            </div>
-            <p className="text-xs text-slate-500 mt-2">
-              {itens.length} {itens.length === 1 ? "bem patrimonial" : "bens patrimoniais"} · Responsável: {responsavelNome}
-            </p>
-          </div>
-        )}
-
-        {/* Botão gerar */}
-        <div className="flex justify-end pb-4">
+        {/* Botões de ação */}
+        <div className="flex gap-3 sticky bottom-4">
           <button
             onClick={handleGerarPDF}
             disabled={!canGenerate}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-bold shadow-lg transition-all hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ background: "linear-gradient(135deg, #1b4f72, #1a73c4, #1b8a5a)" }}
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              background: canGenerate ? "linear-gradient(135deg, #1a73c4, #1b8a5a)" : "#cbd5e1",
+              boxShadow: canGenerate ? "0 4px 12px rgba(26, 115, 196, 0.3)" : "none",
+            }}
           >
             <Printer size={18} />
-            Gerar Guia de Transferência (PDF)
+            Gerar e Imprimir PDF
           </button>
         </div>
 

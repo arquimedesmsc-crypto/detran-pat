@@ -179,7 +179,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
         {/* Dashboard */}
         <NavItem path="/dashboard" label="Dashboard" icon={LayoutDashboard} exact />
 
-        {/* Levantamento — com submenu */}
+        {/* Patrimônios — com submenu */}
         <div>
           <button
             onClick={() => !collapsed && setLevantamentoOpen((v) => !v)}
@@ -199,7 +199,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                   className="text-sm font-medium flex-1 text-left truncate"
                   style={{ color: isLevantamentoActive ? "white" : SIDEBAR_TEXT }}
                 >
-                  Levantamento
+                  Patrimônios
                 </span>
                 <ChevronDown
                   size={14}

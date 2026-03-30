@@ -177,3 +177,23 @@
 - [x] Renomear "Gráficos" para "Relatórios" no menu lateral
 - [x] Formatação de moeda (R$) nos relatórios
 - [x] Formatação de data (DD/MM/YYYY) nos relatórios
+
+
+## Sprint v12 — UX Improvements (Menu, Formulários, Transferência)
+
+### Frontend — Menu Lateral
+- [x] Renomear "Levantamento" para "Patrimônios" no menu lateral
+- [x] Manter submenus "Localizados" e "Não Localizados" sob "Patrimônios"
+
+### Frontend — Formulário Novo Patrimônio
+- [x] Mover upload de imagem para o topo do formulário (antes de outros campos)
+- [x] Exibir preview da imagem selecionada
+- [x] Botão para remover imagem selecionada
+
+### Frontend — Aba Transferência
+- [x] Reorganizar com dropdowns para agrupar informações
+- [x] Seção 1: Origem (setor origem, local origem)
+- [x] Seção 2: Destino (setor destino, local destino)
+- [x] Seção 3: Itens (busca e seleção de patrimônios)
+- [x] Seção 4: Assinatura (signatário, cargo, ID funcional, observações)
+- [x] Dropdowns colapsáveis para melhor organização visual
