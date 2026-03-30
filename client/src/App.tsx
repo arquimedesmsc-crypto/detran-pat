@@ -19,9 +19,30 @@ import Admin from "@/pages/Admin";
 import Relatorios from "@/pages/Relatorios";
 import Onboarding from "@/pages/Onboarding";
 import Ajuda from "@/pages/Ajuda";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 
 function Router() {
+  const [, navigate] = useLocation();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    // Verificar se é a primeira visita
+    const hasSeenOnboarding = localStorage.getItem('onboarding_seen');
+    const currentPath = window.location.pathname;
+    
+    // Mostrar onboarding apenas na primeira visita ao dashboard
+    if (!hasSeenOnboarding && currentPath === '/dashboard') {
+      setShowOnboarding(true);
+      localStorage.setItem('onboarding_seen', 'true');
+    }
+  }, []);
+
+  // Se deve mostrar onboarding, redirecionar para a página de onboarding
+  if (showOnboarding) {
+    return <Redirect to="/onboarding" />;
+  }
+
   return (
     <Switch>
       {/* Rota raiz redireciona para login */}

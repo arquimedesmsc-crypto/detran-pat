@@ -256,3 +256,11 @@
 - [ ] Animações suaves nas transições de onboarding
 - [ ] Responsivo para mobile (cards em coluna única)
 - [ ] Acessibilidade: ARIA labels, navegação por teclado
+
+
+## Sprint v15 — Onboarding Automático, Design Melhorado e Favicon
+
+- [x] Onboarding automático na primeira visita (localStorage para rastrear)
+- [x] Remover item "Guia de Boas-vindas" do menu lateral
+- [x] Melhorar página de Ajuda com design DETRAN-RJ (cores, cards, ícones, busca, 5 categorias)
+- [x] Adicionar favicon com logo DETRAN (gradiente azul-verde com letra D)
