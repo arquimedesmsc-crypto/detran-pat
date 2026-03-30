@@ -21,6 +21,10 @@ export const appUsers = mysqlTable("app_users", {
   username: varchar("username", { length: 64 }).notNull().unique(),
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
   displayName: varchar("display_name", { length: 128 }).notNull(),
+  cargo: varchar("cargo", { length: 128 }),
+  idFuncional: varchar("id_funcional", { length: 32 }),
+  setor: varchar("setor", { length: 128 }),
+  email: varchar("email", { length: 255 }),
   role: mysqlEnum("role", ["admin", "user"]).default("user").notNull(),
   ativo: boolean("ativo").default(true).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -30,6 +34,57 @@ export const appUsers = mysqlTable("app_users", {
 
 export type AppUser = typeof appUsers.$inferSelect;
 export type InsertAppUser = typeof appUsers.$inferInsert;
+
+// ─── System Logs ──────────────────────────────────────────────
+export const systemLogs = mysqlTable("system_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id"),
+  username: varchar("username", { length: 64 }),
+  acao: varchar("acao", { length: 64 }).notNull(),
+  entidade: varchar("entidade", { length: 64 }),
+  entidadeId: varchar("entidade_id", { length: 64 }),
+  detalhes: text("detalhes"),
+  ip: varchar("ip", { length: 64 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SystemLog = typeof systemLogs.$inferSelect;
+export type InsertSystemLog = typeof systemLogs.$inferInsert;
+
+// ─── Transferências ───────────────────────────────────────────
+export const transferencias = mysqlTable("transferencias", {
+  id: int("id").autoincrement().primaryKey(),
+  numeroProtocolo: varchar("numero_protocolo", { length: 32 }).notNull().unique(),
+  setorOrigem: varchar("setor_origem", { length: 255 }).notNull(),
+  setorDestino: varchar("setor_destino", { length: 255 }).notNull(),
+  responsavelId: int("responsavel_id"),
+  responsavelNome: varchar("responsavel_nome", { length: 128 }),
+  responsavelCargo: varchar("responsavel_cargo", { length: 128 }),
+  responsavelIdFuncional: varchar("responsavel_id_funcional", { length: 32 }),
+  observacao: text("observacao"),
+  status: mysqlEnum("status", ["rascunho", "emitida", "concluida", "cancelada"]).default("rascunho").notNull(),
+  dataEmissao: timestamp("data_emissao"),
+  createdBy: int("created_by"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Transferencia = typeof transferencias.$inferSelect;
+export type InsertTransferencia = typeof transferencias.$inferInsert;
+
+// ─── Itens da Transferência ───────────────────────────────────
+export const transferenciaItens = mysqlTable("transferencia_itens", {
+  id: int("id").autoincrement().primaryKey(),
+  transferenciaId: int("transferencia_id").notNull(),
+  patrimonioId: int("patrimonio_id"),
+  patrimonio: int("patrimonio").notNull(),
+  descricao: text("descricao"),
+  tipo: varchar("tipo", { length: 64 }),
+  observacao: text("observacao"),
+});
+
+export type TransferenciaItem = typeof transferenciaItens.$inferSelect;
+export type InsertTransferenciaItem = typeof transferenciaItens.$inferInsert;
 
 // ─── Patrimônio Items ──────────────────────────────────────────
 export const patrimonioItems = mysqlTable("patrimonio_items", {

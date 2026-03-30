@@ -6,6 +6,8 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import {
   addLevantamentoFoto,
+  addSystemLog,
+  createAppUser,
   createLevantamentoItem,
   createPatrimonioItem,
   deleteLevantamentoItem,
@@ -18,9 +20,12 @@ import {
   getPatrimonioKPIs,
   getPatrimonioTimeline,
   getSetoresList,
+  getSystemLogs,
   invalidatePatrimonioCache,
+  listAppUsers,
   loginAppUser,
   marcarLocalizado,
+  updateAppUser,
   updateLevantamentoStatus,
 } from "./db";
 import { storagePut } from "./storage";
@@ -150,9 +155,74 @@ export const appRouter = router({
         invalidatePatrimonioCache();
         return result;
       }),
+  }),  // ─── Admin ───────────────────────────────────────────────────────────────────
+  admin: router({
+    listUsers: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload || payload.role !== "admin") throw new Error("Acesso negado.");
+        return listAppUsers();
+      }),
+
+    createUser: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        username: z.string().min(3).max(64),
+        password: z.string().min(4).max(128),
+        displayName: z.string().min(1).max(128),
+        cargo: z.string().max(128).optional(),
+        idFuncional: z.string().max(32).optional(),
+        setor: z.string().max(128).optional(),
+        email: z.string().email().optional(),
+        role: z.enum(["admin", "user"]).default("user"),
+      }))
+      .mutation(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload || payload.role !== "admin") throw new Error("Acesso negado.");
+        const user = await createAppUser(input);
+        await addSystemLog({ userId: payload.userId, username: payload.username, acao: "criar_usuario", entidade: "app_users", entidadeId: String(user?.id), detalhes: `Criou usuário ${input.username}` });
+        return user;
+      }),
+
+    updateUser: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        id: z.number(),
+        displayName: z.string().min(1).max(128).optional(),
+        cargo: z.string().max(128).optional(),
+        idFuncional: z.string().max(32).optional(),
+        setor: z.string().max(128).optional(),
+        email: z.string().email().optional(),
+        role: z.enum(["admin", "user"]).optional(),
+        ativo: z.boolean().optional(),
+        password: z.string().min(4).max(128).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload || payload.role !== "admin") throw new Error("Acesso negado.");
+        const { token, id, ...data } = input;
+        const user = await updateAppUser(id, data);
+        await addSystemLog({ userId: payload.userId, username: payload.username, acao: "atualizar_usuario", entidade: "app_users", entidadeId: String(id), detalhes: `Atualizou usuário ID ${id}` });
+        return user;
+      }),
+
+    logs: publicProcedure
+      .input(z.object({
+        token: z.string(),
+        page: z.number().min(1).default(1),
+        pageSize: z.number().min(1).max(100).default(50),
+        acao: z.string().optional(),
+        entidade: z.string().optional(),
+      }))
+      .query(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload || payload.role !== "admin") throw new Error("Acesso negado.");
+        return getSystemLogs({ page: input.page, pageSize: input.pageSize, acao: input.acao, entidade: input.entidade });
+      }),
   }),
 
-  // ─── Levantamento Anual ───────────────────────────────────────────────────
+  // ─── Levantamento Anual ───────────────────────────────────────────────────────────────────
   levantamento: router({
     list: publicProcedure
       .input(z.object({ ano: z.number().optional() }))

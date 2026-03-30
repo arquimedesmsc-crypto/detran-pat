@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import PatrimonioLayout from "@/components/PatrimonioLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -201,11 +202,10 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
     return [page - 2, page - 1, page, page + 1, page + 2];
   };
 
-  return (
-    <>
+   return (
+    <PatrimonioLayout>
       {/* Modal de detalhe */}
       <PatrimonioDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
-
       <div className="p-4 md:p-6 space-y-4">
 
         {/* ── Header ── */}
@@ -472,6 +472,6 @@ export default function Patrimonio({ fixedStatus, pageTitle }: PatrimonioProps) 
           </div>
         )}
       </div>
-    </>
+    </PatrimonioLayout>
   );
 }

@@ -1,4 +1,5 @@
 import { trpc } from "@/lib/trpc";
+import PatrimonioLayout from "@/components/PatrimonioLayout";
 import {
   Bar, BarChart, CartesianGrid, Cell,
   Line, LineChart,
@@ -56,6 +57,7 @@ export default function Graficos() {
   }));
 
   return (
+    <PatrimonioLayout>
     <div className="p-4 md:p-6 space-y-5">
 
       {/* Header */}
@@ -199,5 +201,6 @@ export default function Graficos() {
         )}
       </div>
     </div>
+    </PatrimonioLayout>
   );
 }

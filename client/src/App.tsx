@@ -13,7 +13,9 @@ import Patrimonio from "./pages/Patrimonio";
 import Localizados from "./pages/Localizados";
 import NaoLocalizados from "./pages/NaoLocalizados";
 import Graficos from "./pages/Graficos";
-import LevantamentoAnual from "./pages/LevantamentoAnual";
+import LevantamentoAnual from "@/pages/LevantamentoAnual";
+import Transferencia from "@/pages/Transferencia";
+import Admin from "@/pages/Admin";
 import { useState } from "react";
 
 function Router() {
@@ -45,6 +47,12 @@ function Router() {
       </Route>
       <Route path="/levantamento">
         <ProtectedRoute><LevantamentoAnual /></ProtectedRoute>
+      </Route>
+      <Route path="/transferencia">
+        <ProtectedRoute><Transferencia /></ProtectedRoute>
+      </Route>
+      <Route path="/admin">
+        <ProtectedRoute><Admin /></ProtectedRoute>
       </Route>
 
       <Route path="/404" component={NotFound} />

@@ -23,6 +23,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import PatrimonioLayout from "@/components/PatrimonioLayout";
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 const TIPO_LABELS: Record<string, string> = {
@@ -126,7 +127,8 @@ export default function Dashboard() {
   }));
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <PatrimonioLayout>
+      <div className="p-4 md:p-6 space-y-6">
       {/* ── Page Header ── */}
       <div className="detran-gradient rounded-xl p-5 text-white shadow-lg animate-fade-in-up">
         <div className="flex items-center gap-3">
@@ -420,6 +422,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         )}
       </div>
-    </div>
+      </div>
+    </PatrimonioLayout>
   );
 }

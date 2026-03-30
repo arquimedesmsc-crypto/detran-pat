@@ -107,3 +107,53 @@
 
 ### Skill
 - [x] Criar skill detran-ui-components com padrões de botões, cards, telas (integrado ao detran-design-system)
+
+## Sprint v10 — QR Code, Guia de Transferência, Admin, Relatórios
+
+### Backend
+- [ ] Schema: tabela `system_logs` (ação, usuário, entidade, detalhes, timestamp)
+- [ ] Schema: atualizar `app_users` com cargo, id_funcional, setor
+- [ ] Seed: atualizar moises.costa com dados completos (Moisés da Silva Costa, ATI, ID:5028399-5)
+- [ ] Router: admin.listUsers / createUser / updateUser / toggleActive
+- [ ] Router: admin.logs (listar logs de alteração do sistema)
+- [ ] Router: transferencia.criar / listar / pdf
+
+### Frontend — QR Code
+- [ ] Modal de QR Code por patrimônio (gerar, visualizar, baixar PNG, imprimir)
+- [ ] QR Code contém: número do patrimônio, descrição, setor e URL do sistema
+- [ ] Botão "QR Code" na tabela e no modal de detalhe do item
+
+### Frontend — Guia de Transferência
+- [ ] Página /transferencia com formulário: origem, destino, itens, responsável
+- [ ] Seletor de usuário signatário com carimbo automático (nome, cargo, ID funcional)
+- [ ] Geração de PDF com identidade visual DETRAN-RJ (logo, gradiente, tabela de itens)
+- [ ] PDF inclui: carimbo do signatário, data/hora, número do protocolo
+
+### Frontend — Painel Admin
+- [ ] Rota /admin protegida por role=admin
+- [ ] Seção: gestão de usuários (criar, editar, ativar/desativar, redefinir senha)
+- [ ] Seção: logs de alteração (tabela com filtros por usuário/ação/data)
+- [ ] Seção: configurações gerais do sistema (nome, ano do levantamento)
+- [ ] Item "Admin" na sidebar visível apenas para role=admin
+
+### Frontend — Relatórios (substituir Gráficos)
+- [ ] Página /relatorios com seletor de tipo de exportação
+- [ ] Exportar CSV: todos os campos, separador ponto-e-vírgula, encoding UTF-8
+- [ ] Exportar XLSX: planilha formatada com cabeçalho colorido DETRAN-RJ
+- [ ] Exportar PDF: relatório tabular com logo, data e filtros aplicados
+- [ ] Filtros antes da exportação: setor, status, tipo, período
+
+### Polimento Visual
+- [ ] Consistência de botões em todas as telas (usar .btn-detran / .btn-danger)
+- [ ] Sidebar: item Admin com ícone de escudo, visível só para admin
+- [ ] Sidebar: renomear "Gráficos" para "Relatórios"
+- [ ] Transições de página (fade entre rotas)
+
+## Correção Urgente — Sidebar
+- [x] Corrigir menu de navegação lateral sumido (desktop e mobile)
+- [x] Criar tabelas no banco: app_users, system_logs, transferencias, transferencia_itens
+- [x] Inserir usuários padrão: admin, moises.costa, Pedro.Bizarelli
+- [x] QR Code modal implementado (gerar, baixar PNG, imprimir)
+- [x] Seção Transferência no menu lateral (visível para todos os 3 usuários)
+- [x] Página /transferencia com formulário e geração de PDF
+- [x] Painel Admin (/admin) com gestão de usuários e logs (visível apenas para admin)

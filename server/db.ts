@@ -488,3 +488,132 @@ export async function getLevantamentoAnosDisponiveis() {
     .orderBy(desc(levantamentoAnual.ano));
   return result.map((r) => r.ano);
 }
+
+// ─── Admin — Gestão de Usuários ───────────────────────────────────────────────
+import { systemLogs } from "../drizzle/schema";
+
+export async function listAppUsers() {
+  const db = await getDb();
+  if (!db) return [];
+  return db
+    .select({
+      id: appUsers.id,
+      username: appUsers.username,
+      displayName: appUsers.displayName,
+      cargo: appUsers.cargo,
+      idFuncional: appUsers.idFuncional,
+      setor: appUsers.setor,
+      email: appUsers.email,
+      role: appUsers.role,
+      ativo: appUsers.ativo,
+      createdAt: appUsers.createdAt,
+      lastLogin: appUsers.lastLogin,
+    })
+    .from(appUsers)
+    .orderBy(asc(appUsers.displayName));
+}
+
+export async function createAppUser(data: {
+  username: string;
+  password: string;
+  displayName: string;
+  cargo?: string;
+  idFuncional?: string;
+  setor?: string;
+  email?: string;
+  role?: "admin" | "user";
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const passwordHash = hashPassword(data.password);
+  const result = await db.insert(appUsers).values({
+    username: data.username,
+    passwordHash,
+    displayName: data.displayName,
+    cargo: data.cargo ?? null,
+    idFuncional: data.idFuncional ?? null,
+    setor: data.setor ?? null,
+    email: data.email ?? null,
+    role: data.role ?? "user",
+    ativo: true,
+  });
+  const insertId = (result as any)[0]?.insertId;
+  if (insertId) {
+    const created = await db.select().from(appUsers).where(eq(appUsers.id, insertId)).limit(1);
+    return created[0] ?? null;
+  }
+  return null;
+}
+
+export async function updateAppUser(id: number, data: {
+  displayName?: string;
+  cargo?: string;
+  idFuncional?: string;
+  setor?: string;
+  email?: string;
+  role?: "admin" | "user";
+  ativo?: boolean;
+  password?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: any = {};
+  if (data.displayName !== undefined) updateData.displayName = data.displayName;
+  if (data.cargo !== undefined) updateData.cargo = data.cargo;
+  if (data.idFuncional !== undefined) updateData.idFuncional = data.idFuncional;
+  if (data.setor !== undefined) updateData.setor = data.setor;
+  if (data.email !== undefined) updateData.email = data.email;
+  if (data.role !== undefined) updateData.role = data.role;
+  if (data.ativo !== undefined) updateData.ativo = data.ativo;
+  if (data.password) updateData.passwordHash = hashPassword(data.password);
+  if (Object.keys(updateData).length === 0) return null;
+  await db.update(appUsers).set(updateData).where(eq(appUsers.id, id));
+  const updated = await db.select().from(appUsers).where(eq(appUsers.id, id)).limit(1);
+  return updated[0] ?? null;
+}
+
+// ─── Admin — Logs do Sistema ──────────────────────────────────────────────────
+
+export async function getSystemLogs(filters: {
+  userId?: number;
+  acao?: string;
+  entidade?: string;
+  page?: number;
+  pageSize?: number;
+} = {}) {
+  const db = await getDb();
+  if (!db) return { items: [], total: 0 };
+  const { userId, acao, entidade, page = 1, pageSize = 50 } = filters;
+  const conditions = [];
+  if (userId) conditions.push(eq(systemLogs.userId, userId));
+  if (acao) conditions.push(eq(systemLogs.acao, acao));
+  if (entidade) conditions.push(eq(systemLogs.entidade, entidade));
+  const where = conditions.length > 0 ? and(...conditions) : undefined;
+  const [items, countResult] = await Promise.all([
+    db.select().from(systemLogs).where(where).orderBy(desc(systemLogs.createdAt)).limit(pageSize).offset((page - 1) * pageSize),
+    db.select({ count: sql`COUNT(*)` }).from(systemLogs).where(where),
+  ]);
+  return { items, total: Number((countResult[0] as any)?.count ?? 0) };
+}
+
+export async function addSystemLog(data: {
+  userId?: number;
+  username?: string;
+  acao: string;
+  entidade?: string;
+  entidadeId?: string;
+  detalhes?: string;
+  ip?: string;
+}) {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(systemLogs).values({
+    userId: data.userId ?? null,
+    username: data.username ?? null,
+    acao: data.acao,
+    entidade: data.entidade ?? null,
+    entidadeId: data.entidadeId ?? null,
+    detalhes: data.detalhes ?? null,
+    ip: data.ip ?? null,
+  });
+}

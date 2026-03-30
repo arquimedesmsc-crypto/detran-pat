@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import {
   AlertTriangle,
+  ArrowLeftRight,
   BarChart3,
   CheckCircle2,
   ChevronDown,
@@ -13,6 +14,7 @@ import {
   LogOut,
   Menu,
   Plus,
+  Settings,
   User,
   X,
 } from "lucide-react";
@@ -257,8 +259,16 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
         {/* Levantamento Anual */}
         <NavItem path="/levantamento" label="Levantamento Anual" icon={ClipboardList} />
 
+        {/* Transferência */}
+        <NavItem path="/transferencia" label="Transferência" icon={ArrowLeftRight} />
+
         {/* Gráficos */}
         <NavItem path="/graficos" label="Gráficos" icon={BarChart3} />
+
+        {/* Admin — apenas para administradores */}
+        {user?.role === "admin" && (
+          <NavItem path="/admin" label="Administração" icon={Settings} />
+        )}
       </nav>
 
       {/* Footer com usuário e logout */}

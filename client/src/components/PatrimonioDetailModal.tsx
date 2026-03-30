@@ -6,6 +6,7 @@ import {
   Hash,
   Info,
   MapPin,
+  QrCode,
   Monitor,
   Package,
   Sofa,
@@ -13,7 +14,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import QRCodeModal from "./QRCodeModal";
 
 /* ── Tipos ─────────────────────────────────────────────────────────────── */
 export interface PatrimonioItem {
@@ -121,6 +123,8 @@ export default function PatrimonioDetailModal({ item, onClose }: Props) {
     return () => { document.body.style.overflow = ""; };
   }, [item]);
 
+  const [qrOpen, setQrOpen] = useState(false);
+
   if (!item) return null;
 
   const tipo     = item.tipo ?? "outros";
@@ -131,6 +135,8 @@ export default function PatrimonioDetailModal({ item, onClose }: Props) {
 
   return (
     /* Overlay */
+    <>
+    {qrOpen && <QRCodeModal item={item} onClose={() => setQrOpen(false)} />}
     <div
       className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4"
       style={{ background: "rgba(0,0,0,0.55)" }}
@@ -299,10 +305,19 @@ export default function PatrimonioDetailModal({ item, onClose }: Props) {
         </div>
 
         {/* ── Rodapé ── */}
-        <div className="flex-shrink-0 px-5 py-3 border-t border-slate-100 bg-slate-50/80">
+        <div className="flex-shrink-0 px-5 py-3 border-t border-slate-100 bg-slate-50/80 flex gap-2">
+          <button
+            onClick={() => setQrOpen(true)}
+            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+            style={{ background: "linear-gradient(135deg, #1b4f72, #1a73c4)" }}
+            title="Gerar QR Code"
+          >
+            <QrCode size={15} />
+            QR Code
+          </button>
           <button
             onClick={onClose}
-            className="w-full py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
+            className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-opacity hover:opacity-90"
             style={{ background: "linear-gradient(135deg, #1a73c4, #1b8a5a)" }}
           >
             Fechar
@@ -310,5 +325,6 @@ export default function PatrimonioDetailModal({ item, onClose }: Props) {
         </div>
       </div>
     </div>
+    </>
   );
 }
