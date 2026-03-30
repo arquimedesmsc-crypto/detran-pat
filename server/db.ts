@@ -617,3 +617,190 @@ export async function addSystemLog(data: {
     ip: data.ip ?? null,
   });
 }
+
+
+// ─── Exportação de Relatórios ──────────────────────────────────────────────────
+
+export function formatarCSV(items: any[]): string {
+  if (items.length === 0) return "";
+
+  // Cabeçalho
+  const headers = [
+    "Patrimônio",
+    "Descrição",
+    "Setor",
+    "Local",
+    "Data Incorporação",
+    "Valor (R$)",
+    "Status",
+    "Tipo",
+  ];
+
+  // Linhas
+  const rows = items.map((item) => [
+    item.patrimonio,
+    `"${(item.descricao || "").replace(/"/g, '""')}"`, // Escapar aspas duplas
+    item.setor || "",
+    item.local || "",
+    item.dataIncorporacao ? new Date(item.dataIncorporacao).toLocaleDateString("pt-BR") : "",
+    item.valor ? Number(item.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 }) : "",
+    item.status === "localizado" ? "Localizado" : "Não Localizado",
+    item.tipo || "",
+  ]);
+
+  // Montar CSV
+  const csv = [
+    headers.join(";"),
+    ...rows.map((row) => row.join(";")),
+  ].join("\n");
+
+  return csv;
+}
+
+export async function formatarXLSX(items: any[]): Promise<Buffer> {
+  // Usar ExcelJS para gerar XLSX
+  const ExcelJS = require("exceljs");
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Patrimônio");
+
+  // Cabeçalho
+  const headers = [
+    "Patrimônio",
+    "Descrição",
+    "Setor",
+    "Local",
+    "Data Incorporação",
+    "Valor (R$)",
+    "Status",
+    "Tipo",
+  ];
+
+  worksheet.addRow(headers);
+
+  // Estilo do cabeçalho
+  const headerRow = worksheet.getRow(1);
+  headerRow.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FF1A73C4" }, // Azul DETRAN
+  };
+  headerRow.font = { bold: true, color: { argb: "FFFFFFFF" }, size: 11 };
+  headerRow.alignment = { horizontal: "center", vertical: "center" };
+
+  // Adicionar dados
+  items.forEach((item) => {
+    worksheet.addRow([
+      item.patrimonio,
+      item.descricao || "",
+      item.setor || "",
+      item.local || "",
+      item.dataIncorporacao ? new Date(item.dataIncorporacao).toLocaleDateString("pt-BR") : "",
+      item.valor ? Number(item.valor) : 0,
+      item.status === "localizado" ? "Localizado" : "Não Localizado",
+      item.tipo || "",
+    ]);
+  });
+
+  // Ajustar largura das colunas
+  worksheet.columns.forEach((col: any) => {
+    col.width = 18;
+  });
+
+  // Formatar coluna de valor como moeda
+  worksheet.getColumn(6).numFmt = '"R$" #,##0.00';
+
+  // Gerar buffer
+  return await workbook.xlsx.writeBuffer();
+}
+
+export async function formatarPDF(items: any[], logoUrl?: string): Promise<Buffer> {
+  // Usar PDFKit para gerar PDF
+  const PDFDocument = require("pdfkit");
+  const doc = new PDFDocument({
+    size: "A4",
+    margin: 40,
+  });
+
+  const chunks: Buffer[] = [];
+  doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+
+  // Cabeçalho
+  if (logoUrl) {
+    try {
+      // Tentar carregar logo (opcional)
+      doc.image(logoUrl, 40, 40, { width: 50 });
+    } catch (e) {
+      // Logo não disponível, continuar sem
+    }
+  }
+
+  doc.fontSize(16).font("Helvetica-Bold").text("DETRAN-RJ", 100, 50);
+  doc.fontSize(10).font("Helvetica").text("Sistema de Patrimônio", 100, 68);
+  doc.fontSize(10).text(`Relatório gerado em ${new Date().toLocaleDateString("pt-BR")}`, 100, 82);
+
+  // Linha divisória
+  doc.moveTo(40, 110).lineTo(555, 110).stroke();
+
+  // Tabela
+  const tableTop = 130;
+  const rowHeight = 20;
+  const colWidths = [60, 150, 80, 60, 60, 45];
+  const headers = ["Patrimônio", "Descrição", "Setor", "Status", "Tipo", "Valor"];
+
+  // Cabeçalho da tabela
+  doc.fontSize(9).font("Helvetica-Bold").fillColor("#1A73C4");
+  let x = 40;
+  headers.forEach((header, i) => {
+    doc.text(header, x, tableTop, { width: colWidths[i], align: "left" });
+    x += colWidths[i];
+  });
+
+  // Linha divisória
+  doc.moveTo(40, tableTop + 15).lineTo(555, tableTop + 15).stroke();
+
+  // Dados
+  doc.fontSize(8).font("Helvetica").fillColor("#000000");
+  let y = tableTop + 20;
+
+  items.slice(0, 50).forEach((item, idx) => {
+    // Quebra de página se necessário
+    if (y > 750) {
+      doc.addPage();
+      y = 40;
+    }
+
+    x = 40;
+    const rowData = [
+      String(item.patrimonio),
+      (item.descricao || "").substring(0, 30),
+      item.setor || "",
+      item.status === "localizado" ? "Loc." : "Não Loc.",
+      item.tipo || "",
+      item.valor ? `R$ ${Number(item.valor).toFixed(2)}` : "—",
+    ];
+
+    rowData.forEach((data, i) => {
+      doc.text(data, x, y, { width: colWidths[i], align: "left" });
+      x += colWidths[i];
+    });
+
+    // Linha de separação entre linhas
+    if (idx % 2 === 0) {
+      doc.fillColor("#f0f0f0").rect(40, y - 5, 515, rowHeight).fill();
+      doc.fillColor("#000000");
+    }
+
+    y += rowHeight;
+  });
+
+  // Rodapé
+  doc.fontSize(8).fillColor("#999999").text(`Total de registros: ${items.length}`, 40, 780, { align: "center" });
+
+  doc.end();
+
+  return new Promise((resolve) => {
+    doc.on("end", () => {
+      resolve(Buffer.concat(chunks));
+    });
+  });
+}

@@ -262,8 +262,8 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
         {/* Transferência */}
         <NavItem path="/transferencia" label="Transferência" icon={ArrowLeftRight} />
 
-        {/* Gráficos */}
-        <NavItem path="/graficos" label="Gráficos" icon={BarChart3} />
+        {/* Relatórios */}
+        <NavItem path="/relatorios" label="Relatórios" icon={BarChart3} />
 
         {/* Admin — apenas para administradores */}
         {user?.role === "admin" && (

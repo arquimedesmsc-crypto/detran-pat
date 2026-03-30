@@ -11,6 +11,9 @@ import {
   createLevantamentoItem,
   createPatrimonioItem,
   deleteLevantamentoItem,
+  formatarCSV,
+  formatarPDF,
+  formatarXLSX,
   getLevantamentoAnual,
   getLevantamentoAnosDisponiveis,
   getLevantamentoFotos,
@@ -154,6 +157,33 @@ export const appRouter = router({
         const result = await createPatrimonioItem(input);
         invalidatePatrimonioCache();
         return result;
+      }),
+
+    export: publicProcedure
+      .input(z.object({
+        items: z.array(z.any()),
+        filters: z.object({
+          setor: z.string().optional(),
+          status: z.string().optional(),
+          tipo: z.string().optional(),
+        }).optional(),
+        format: z.enum(["csv", "xlsx", "pdf"]),
+      }))
+      .mutation(async ({ input }) => {
+        const { items, format } = input;
+        
+        if (format === "csv") {
+          const csv = formatarCSV(items);
+          return { data: csv, contentType: "text/csv;charset=utf-8" };
+        } else if (format === "xlsx") {
+          const buffer = await formatarXLSX(items);
+          return { data: buffer.toString("base64"), contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" };
+        } else if (format === "pdf") {
+          const buffer = await formatarPDF(items);
+          return { data: buffer.toString("base64"), contentType: "application/pdf" };
+        }
+        
+        throw new Error("Formato inválido");
       }),
   }),  // ─── Admin ───────────────────────────────────────────────────────────────────
   admin: router({

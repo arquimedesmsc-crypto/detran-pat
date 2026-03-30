@@ -157,3 +157,23 @@
 - [x] Seção Transferência no menu lateral (visível para todos os 3 usuários)
 - [x] Página /transferencia com formulário e geração de PDF
 - [x] Painel Admin (/admin) com gestão de usuários e logs (visível apenas para admin)
+
+
+## Sprint v11 — Exportação de Relatórios (CSV, XLSX, PDF)
+
+### Backend
+- [x] Router: patrimonio.export (query com filtros, retorna CSV/XLSX/PDF)
+- [x] Helpers: formatarCSV, formatarXLSX, formatarPDF com identidade visual DETRAN-RJ
+- [x] Testes unitários para funções de exportação (19 testes passando)
+
+### Frontend — Página Relatórios
+- [x] Rota /relatorios com formulário de filtros (setor, status, tipo)
+- [x] Seletor de formato de exportação (CSV, XLSX, PDF)
+- [x] Botão "Exportar" que dispara download do arquivo
+- [x] Preview dos dados que serão exportados (tabela com filtros aplicados)
+- [x] Item "Relatórios" no menu lateral com ícone BarChart3
+
+### Polimento
+- [x] Renomear "Gráficos" para "Relatórios" no menu lateral
+- [x] Formatação de moeda (R$) nos relatórios
+- [x] Formatação de data (DD/MM/YYYY) nos relatórios
