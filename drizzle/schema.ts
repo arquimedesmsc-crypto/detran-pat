@@ -30,6 +30,7 @@ export const appUsers = mysqlTable("app_users", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastLogin: timestamp("last_login"),
+  onboardingEnabled: boolean("onboarding_enabled").default(true).notNull(),
 });
 
 export type AppUser = typeof appUsers.$inferSelect;

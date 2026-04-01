@@ -4,9 +4,10 @@ import NotFound from "@/pages/NotFound";
 import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { AppAuthProvider } from "./contexts/AppAuthContext";
+import { AppAuthProvider, useAppAuth } from "./contexts/AppAuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SplashScreen from "./components/SplashScreen";
+import OnboardingModal from "./components/OnboardingModal";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Patrimonio from "./pages/Patrimonio";
@@ -21,83 +22,119 @@ import Onboarding from "@/pages/Onboarding";
 import Ajuda from "@/pages/Ajuda";
 import Perfil from "@/pages/Perfil";
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { trpc } from "@/lib/trpc";
 
-function Router() {
-  const [, navigate] = useLocation();
+// ─── Onboarding Controller ────────────────────────────────────────────────────
+function OnboardingController() {
+  const { user, token, isAuthenticated } = useAppAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  // Buscar preferência do usuário no banco
+  const perfilQuery = trpc.perfil.get.useQuery(
+    { token: token ?? "" },
+    { enabled: !!token && isAuthenticated, staleTime: 60_000 }
+  );
+
+  const setOnboardingMutation = trpc.perfil.setOnboarding.useMutation();
 
   useEffect(() => {
-    // Verificar se é a primeira visita
-    const hasSeenOnboarding = localStorage.getItem('onboarding_seen');
-    const currentPath = window.location.pathname;
-    
-    // Mostrar onboarding apenas na primeira visita ao dashboard
-    if (!hasSeenOnboarding && currentPath === '/dashboard') {
-      setShowOnboarding(true);
-      localStorage.setItem('onboarding_seen', 'true');
-    }
-  }, []);
+    if (!isAuthenticated || !user || checked) return;
+    if (perfilQuery.isLoading) return;
 
-  // Se deve mostrar onboarding, redirecionar para a página de onboarding
-  if (showOnboarding) {
-    return <Redirect to="/onboarding" />;
-  }
+    const onboardingEnabled = perfilQuery.data?.onboardingEnabled ?? true;
+    // Chave única por usuário para não mostrar toda vez
+    const sessionKey = `onboarding_shown_${user.id}`;
+    const shownThisSession = sessionStorage.getItem(sessionKey);
+
+    if (onboardingEnabled && !shownThisSession) {
+      setShowOnboarding(true);
+      sessionStorage.setItem(sessionKey, "true");
+    }
+    setChecked(true);
+  }, [isAuthenticated, user, perfilQuery.data, perfilQuery.isLoading, checked]);
+
+  const handleClose = () => {
+    setShowOnboarding(false);
+  };
+
+  const handleDisable = () => {
+    if (token) {
+      setOnboardingMutation.mutate({ token, enabled: false });
+    }
+    setShowOnboarding(false);
+  };
+
+  if (!showOnboarding) return null;
 
   return (
-    <Switch>
-      {/* Rota raiz redireciona para login */}
-      <Route path="/">
-        <Redirect to="/login" />
-      </Route>
-
-      {/* Login — público */}
-      <Route path="/login" component={Login} />
-
-      {/* Rotas protegidas */}
-      <Route path="/dashboard">
-        <ProtectedRoute><Dashboard /></ProtectedRoute>
-      </Route>
-      <Route path="/patrimonio">
-        <ProtectedRoute><Patrimonio /></ProtectedRoute>
-      </Route>
-      <Route path="/localizados">
-        <ProtectedRoute><Localizados /></ProtectedRoute>
-      </Route>
-      <Route path="/nao-localizados">
-        <ProtectedRoute><NaoLocalizados /></ProtectedRoute>
-      </Route>
-      <Route path="/graficos">
-        <ProtectedRoute><Graficos /></ProtectedRoute>
-      </Route>
-      <Route path="/levantamento">
-        <ProtectedRoute><LevantamentoAnual /></ProtectedRoute>
-      </Route>
-      <Route path="/transferencia">
-        <ProtectedRoute><Transferencia /></ProtectedRoute>
-      </Route>
-      <Route path="/admin">
-        <ProtectedRoute><Admin /></ProtectedRoute>
-      </Route>
-      <Route path="/relatorios">
-        <ProtectedRoute><Relatorios /></ProtectedRoute>
-      </Route>
-      <Route path="/onboarding">
-        <ProtectedRoute><Onboarding /></ProtectedRoute>
-      </Route>
-      <Route path="/ajuda">
-        <ProtectedRoute><Ajuda /></ProtectedRoute>
-      </Route>
-      <Route path="/perfil">
-        <ProtectedRoute><Perfil /></ProtectedRoute>
-      </Route>
-
-      <Route path="/404" component={NotFound} />
-      <Route component={NotFound} />
-    </Switch>
+    <OnboardingModal
+      onClose={handleClose}
+      onDisable={handleDisable}
+    />
   );
 }
 
+// ─── Router ───────────────────────────────────────────────────────────────────
+function Router() {
+  return (
+    <>
+      <OnboardingController />
+      <Switch>
+        {/* Rota raiz redireciona para login */}
+        <Route path="/">
+          <Redirect to="/login" />
+        </Route>
+
+        {/* Login — público */}
+        <Route path="/login" component={Login} />
+
+        {/* Rotas protegidas */}
+        <Route path="/dashboard">
+          <ProtectedRoute><Dashboard /></ProtectedRoute>
+        </Route>
+        <Route path="/patrimonio">
+          <ProtectedRoute><Patrimonio /></ProtectedRoute>
+        </Route>
+        <Route path="/localizados">
+          <ProtectedRoute><Localizados /></ProtectedRoute>
+        </Route>
+        <Route path="/nao-localizados">
+          <ProtectedRoute><NaoLocalizados /></ProtectedRoute>
+        </Route>
+        <Route path="/graficos">
+          <ProtectedRoute><Graficos /></ProtectedRoute>
+        </Route>
+        <Route path="/levantamento">
+          <ProtectedRoute><LevantamentoAnual /></ProtectedRoute>
+        </Route>
+        <Route path="/transferencia">
+          <ProtectedRoute><Transferencia /></ProtectedRoute>
+        </Route>
+        <Route path="/admin">
+          <ProtectedRoute><Admin /></ProtectedRoute>
+        </Route>
+        <Route path="/relatorios">
+          <ProtectedRoute><Relatorios /></ProtectedRoute>
+        </Route>
+        <Route path="/onboarding">
+          <ProtectedRoute><Onboarding /></ProtectedRoute>
+        </Route>
+        <Route path="/ajuda">
+          <ProtectedRoute><Ajuda /></ProtectedRoute>
+        </Route>
+        <Route path="/perfil">
+          <ProtectedRoute><Perfil /></ProtectedRoute>
+        </Route>
+
+        <Route path="/404" component={NotFound} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
+  );
+}
+
+// ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
   const [splashDone, setSplashDone] = useState(false);
 

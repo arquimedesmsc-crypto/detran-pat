@@ -1,7 +1,7 @@
 # 📋 TODO — DETRAN-RJ Patrimônio Dashboard
 
 > Rastreamento de funcionalidades, bugs e melhorias do sistema.
-> Última atualização: 2026-03-30
+> Última atualização: 2026-04-01
 
 ---
 
@@ -74,10 +74,16 @@
 - [x] Alteração de senha com confirmação
 - [x] Toggle de tema claro/escuro
 - [x] Solicitação de alteração de cargo/setor (requer aprovação do admin)
+- [x] Toggle de Tutorial de Boas-vindas (ativar/desativar onboarding)
 
 ### 🎓 Onboarding e Ajuda
 - [x] Onboarding automático na primeira visita (localStorage)
 - [x] Tour interativo em 5 passos
+- [x] OnboardingModal fullscreen com 11 slides animados cobrindo todas as funcionalidades
+- [x] Campo `onboarding_enabled` no banco de dados (tabela `app_users`)
+- [x] Toggle de onboarding na página de Perfil (ativar/desativar)
+- [x] Botão "Reativar e ver tutorial agora" no perfil
+- [x] Integração automática no App.tsx com lógica de exibição por sessão
 - [x] Página de Ajuda (`/ajuda`) com FAQ em 5 categorias, busca em tempo real
 - [x] Componente `ConfirmDialog` reutilizável com 6 variantes
 
@@ -136,3 +142,20 @@
 | `www.moisescosta.org` | Customizado | ✅ Ativo |
 | `moisescosta.org` | Customizado | ✅ Ativo |
 | `detrandash-otclswdp.manus.space` | Manus (legado) | ⚠️ Removido do acesso público |
+
+
+## ✅ Sprint v17 — Onboarding Visual Completo DETRAN-RJ
+
+- [x] Recriar OnboardingModal como overlay fullscreen com slides animados
+- [x] Slide 1: Boas-vindas com logo DETRAN, gradiente e animação de entrada
+- [x] Slide 2: Dashboard — preview visual com KPIs e gráficos
+- [x] Slide 3: Patrimônios — preview da tabela com filtros e QR Code
+- [x] Slide 4: Transferência — preview do formulário e PDF
+- [x] Slide 5: Relatórios — preview dos formatos de exportação
+- [x] Slide 6: Perfil e Admin — preview das configurações
+- [x] Slides 7-11: Funcionalidades avançadas (QR Code, Levantamento Anual, Ajuda, Conclusão)
+- [x] Indicadores de progresso (dots) com animação
+- [x] Persistência via banco de dados (campo `onboarding_enabled`)
+- [x] Toggle de onboarding na página de Perfil
+- [x] Responsivo mobile-first
+- [x] 36 testes unitários passando após implementação

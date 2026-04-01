@@ -5,6 +5,22 @@
 
 ---
 
+## [v17] — 2026-04-01 — Onboarding Completo com 11 Slides e Toggle no Perfil
+
+### ✨ Adicionado
+- **OnboardingModal fullscreen** — Modal com 11 slides animados cobrindo todas as funcionalidades do sistema (Dashboard, Patrimônios, Transferência, Relatórios, QR Code, Levantamento Anual, Perfil, Admin, Ajuda)
+- **Campo `onboarding_enabled`** na tabela `app_users` — Persistência da preferência do usuário no banco de dados
+- **Toggle de Tutorial de Boas-vindas** na página de Perfil — Permite ativar/desativar o onboarding com feedback visual imediato
+- **Botão "Reativar e ver tutorial agora"** — Exibido quando o tutorial está desativado, permite reativar e limpar a sessão
+- **Endpoint `perfil.setOnboarding`** no tRPC — Procedure para atualizar a preferência de onboarding via banco
+
+### 🔧 Alterado
+- Integração do OnboardingModal no `App.tsx` com lógica de exibição automática por sessão
+- Onboarding agora respeita a preferência salva no banco (campo `onboarding_enabled`)
+- Slides expandidos de 5 para 11 com ilustrações interativas e identidade visual DETRAN-RJ
+
+---
+
 ## [v15] — 2026-03-30 — Onboarding, Design e Domínio
 
 ### ✨ Adicionado

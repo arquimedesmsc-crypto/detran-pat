@@ -50,6 +50,14 @@ export default function Perfil() {
     onError: () => toast.error("Erro ao enviar solicitação"),
   });
 
+  const setOnboardingMutation = trpc.perfil.setOnboarding.useMutation({
+    onSuccess: (_, vars) => {
+      toast.success(vars.enabled ? "Tutorial ativado! Será exibido no próximo acesso." : "Tutorial desativado.");
+      perfilQuery.refetch();
+    },
+    onError: () => toast.error("Erro ao atualizar preferência do tutorial"),
+  });
+
   // Estado do formulário
   const [displayName, setDisplayName] = useState("");
   const [cargo, setCargo] = useState("");
@@ -544,6 +552,67 @@ export default function Perfil() {
                     )}
                   </button>
                 </div>
+              </div>
+            </div>
+
+            {/* Tutorial de Boas-vindas */}
+            <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-border flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1A73C4, #2196F3)" }}>
+                  <Bell className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="font-semibold text-foreground">Tutorial de Boas-vindas</h2>
+              </div>
+              <div className="p-6">
+                <p className="text-sm text-muted-foreground mb-4">
+                  O tutorial é exibido automaticamente ao entrar no sistema. Você pode desativá-lo se já conhece todas as funcionalidades.
+                </p>
+                <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/30">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1A73C4, #2196F3)" }}>
+                      <CheckCircle2 className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Exibir tutorial ao entrar</p>
+                      <p className="text-xs text-muted-foreground">
+                        {perfilQuery.data?.onboardingEnabled ? "Ativado — exibido na próxima sessão" : "Desativado"}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (!token) return;
+                      setOnboardingMutation.mutate({ token, enabled: !perfilQuery.data?.onboardingEnabled });
+                    }}
+                    disabled={setOnboardingMutation.isPending}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                      perfilQuery.data?.onboardingEnabled
+                        ? "bg-[#1A73C4]"
+                        : "bg-gray-300 dark:bg-gray-600"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-md transition-transform ${
+                        perfilQuery.data?.onboardingEnabled ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+                {!perfilQuery.data?.onboardingEnabled && (
+                  <button
+                    onClick={() => {
+                      if (!token) return;
+                      setOnboardingMutation.mutate({ token, enabled: true });
+                      // Limpar sessão para forçar exibição
+                      if (perfilQuery.data?.id) {
+                        sessionStorage.removeItem(`onboarding_shown_${perfilQuery.data.id}`);
+                      }
+                    }}
+                    className="mt-3 w-full text-sm text-[#1A73C4] hover:underline text-center"
+                  >
+                    Reativar e ver tutorial agora
+                  </button>
+                )}
               </div>
             </div>
 

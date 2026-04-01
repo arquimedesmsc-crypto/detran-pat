@@ -34,6 +34,9 @@ import {
   updateAppUserProfile,
 } from "./db";
 import { storagePut } from "./storage";
+import { getDb } from "./db";
+import { appUsers } from "../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 // ─── JWT helpers ──────────────────────────────────────────────────────────────
 const JWT_SECRET_KEY = new TextEncoder().encode(
@@ -357,6 +360,7 @@ export const appRouter = router({
           role: user.role,
           createdAt: user.createdAt,
           lastLogin: user.lastLogin,
+          onboardingEnabled: user.onboardingEnabled ?? true,
         };
       }),
 
@@ -379,6 +383,17 @@ export const appRouter = router({
         const { token, currentPassword, newPassword, ...updateData } = input;
         const result = await updateAppUserProfile(payload.userId, updateData, currentPassword, newPassword);
         if (!result.success) throw new Error(result.error ?? "Erro ao atualizar perfil");
+        return { success: true };
+      }),
+
+    setOnboarding: publicProcedure
+      .input(z.object({ token: z.string(), enabled: z.boolean() }))
+      .mutation(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload) throw new Error("Token inválido");
+        const db = await getDb();
+        if (!db) throw new Error("Erro de conexão com o banco");
+        await db.update(appUsers).set({ onboardingEnabled: input.enabled }).where(eq(appUsers.id, payload.userId));
         return { success: true };
       }),
 
