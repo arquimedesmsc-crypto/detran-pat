@@ -603,10 +603,6 @@ export default function Perfil() {
                     onClick={() => {
                       if (!token) return;
                       setOnboardingMutation.mutate({ token, enabled: true });
-                      // Limpar sessão para forçar exibição
-                      if (perfilQuery.data?.id) {
-                        sessionStorage.removeItem(`onboarding_shown_${perfilQuery.data.id}`);
-                      }
                     }}
                     className="mt-3 w-full text-sm text-[#1A73C4] hover:underline text-center"
                   >

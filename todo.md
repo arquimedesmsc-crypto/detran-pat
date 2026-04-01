@@ -159,3 +159,9 @@
 - [x] Toggle de onboarding na página de Perfil
 - [x] Responsivo mobile-first
 - [x] 36 testes unitários passando após implementação
+
+## ✅ Sprint v18 — Onboarding Permanente a Cada Login
+
+- [x] Remover controle de sessionStorage/localStorage do onboarding
+- [x] Exibir onboarding toda vez que o usuário fizer login (não apenas uma vez por sessão)
+- [x] Respeitar apenas o campo `onboarding_enabled` do banco para controle de exibição

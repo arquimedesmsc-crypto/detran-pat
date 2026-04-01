@@ -38,18 +38,14 @@ function OnboardingController() {
 
   const setOnboardingMutation = trpc.perfil.setOnboarding.useMutation();
 
-  useEffect(() => {
+    useEffect(() => {
     if (!isAuthenticated || !user || checked) return;
     if (perfilQuery.isLoading) return;
-
+    // Exibir onboarding toda vez que o usuário logar,
+    // respeitando apenas o toggle de desativação no perfil
     const onboardingEnabled = perfilQuery.data?.onboardingEnabled ?? true;
-    // Chave única por usuário para não mostrar toda vez
-    const sessionKey = `onboarding_shown_${user.id}`;
-    const shownThisSession = sessionStorage.getItem(sessionKey);
-
-    if (onboardingEnabled && !shownThisSession) {
+    if (onboardingEnabled) {
       setShowOnboarding(true);
-      sessionStorage.setItem(sessionKey, "true");
     }
     setChecked(true);
   }, [isAuthenticated, user, perfilQuery.data, perfilQuery.isLoading, checked]);
