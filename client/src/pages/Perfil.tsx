@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PatrimonioLayout from "@/components/PatrimonioLayout";
 import { useAppAuth } from "@/contexts/AppAuthContext";
+import { useI18n } from "@/contexts/I18nContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -28,8 +29,9 @@ const CARGOS = [
 ];
 
 export default function Perfil() {
-  const { user, token } = useAppAuth();
+  const { user, token, updateLanguage } = useAppAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t, language } = useI18n();
 
   // Buscar dados completos do perfil
   const perfilQuery = trpc.perfil.get.useQuery(
@@ -50,6 +52,10 @@ export default function Perfil() {
     onError: () => toast.error("Erro ao enviar solicitação"),
   });
 
+  const setLanguageMutation = trpc.perfil.setLanguage.useMutation({
+    onSuccess: () => toast.success(language === "en" ? "Language updated!" : "Idioma atualizado!"),
+    onError: () => toast.error(language === "en" ? "Error updating language" : "Erro ao atualizar idioma"),
+  });
   const setOnboardingMutation = trpc.perfil.setOnboarding.useMutation({
     onSuccess: (_, vars) => {
       toast.success(vars.enabled ? "Tutorial ativado! Será exibido no próximo acesso." : "Tutorial desativado.");
@@ -514,10 +520,10 @@ export default function Perfil() {
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1B8A5A, #2E9D6A)" }}>
                   <Palette className="w-4 h-4 text-white" />
                 </div>
-                <h2 className="font-semibold text-foreground">Aparência</h2>
+                <h2 className="font-semibold text-foreground">{t("profile.appearance")}</h2>
               </div>
               <div className="p-6 space-y-4">
-                <p className="text-sm text-muted-foreground">Escolha o tema de exibição do sistema.</p>
+                <p className="text-sm text-muted-foreground">{t("profile.appearanceDesc")}</p>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => theme === "dark" && toggleTheme?.()}
@@ -530,7 +536,7 @@ export default function Perfil() {
                     <div className="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center shadow-sm">
                       <Sun className="w-5 h-5 text-amber-500" />
                     </div>
-                    <span className="text-xs font-medium">Claro</span>
+                    <span className="text-xs font-medium">{t("profile.light")}</span>
                     {theme === "light" && (
                       <CheckCircle2 className="w-4 h-4 text-[#1A73C4]" />
                     )}
@@ -546,8 +552,60 @@ export default function Perfil() {
                     <div className="w-10 h-10 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center shadow-sm">
                       <Moon className="w-5 h-5 text-blue-300" />
                     </div>
-                    <span className="text-xs font-medium">Escuro</span>
+                    <span className="text-xs font-medium">{t("profile.dark")}</span>
                     {theme === "dark" && (
+                      <CheckCircle2 className="w-4 h-4 text-[#1A73C4]" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+            {/* Idioma */}
+            <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-border flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1A73C4, #0d5ba8)" }}>
+                  <span className="text-white text-xs font-black">Aã</span>
+                </div>
+                <h2 className="font-semibold text-foreground">{t("profile.language")}</h2>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-sm text-muted-foreground">{t("profile.languageDesc")}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => {
+                      if (language === "en" && token) {
+                        setLanguageMutation.mutate({ token, language: "pt" });
+                        updateLanguage("pt");
+                      }
+                    }}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                      language === "pt"
+                        ? "border-[#1A73C4] bg-blue-50 shadow-md"
+                        : "border-border hover:border-[#1A73C4]/50"
+                    }`}
+                  >
+                    <span className="text-2xl">🇧🇷</span>
+                    <span className="text-xs font-medium">{t("profile.portuguese")}</span>
+                    {language === "pt" && (
+                      <CheckCircle2 className="w-4 h-4 text-[#1A73C4]" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (language === "pt" && token) {
+                        setLanguageMutation.mutate({ token, language: "en" });
+                        updateLanguage("en");
+                      }
+                    }}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                      language === "en"
+                        ? "border-[#1A73C4] bg-blue-50 shadow-md"
+                        : "border-border hover:border-[#1A73C4]/50"
+                    }`}
+                  >
+                    <span className="text-2xl">🇺🇸</span>
+                    <span className="text-xs font-medium">{t("profile.english")}</span>
+                    {language === "en" && (
                       <CheckCircle2 className="w-4 h-4 text-[#1A73C4]" />
                     )}
                   </button>
@@ -561,11 +619,11 @@ export default function Perfil() {
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #1A73C4, #2196F3)" }}>
                   <Bell className="w-4 h-4 text-white" />
                 </div>
-                <h2 className="font-semibold text-foreground">Tutorial de Boas-vindas</h2>
+                <h2 className="font-semibold text-foreground">{t("profile.tutorial")}</h2>
               </div>
               <div className="p-6">
                 <p className="text-sm text-muted-foreground mb-4">
-                  O tutorial é exibido automaticamente ao entrar no sistema. Você pode desativá-lo se já conhece todas as funcionalidades.
+                  {t("profile.tutorialDesc")}
                 </p>
                 <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/30">
                   <div className="flex items-center gap-3">
@@ -573,9 +631,9 @@ export default function Perfil() {
                       <CheckCircle2 className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-foreground">Exibir tutorial ao entrar</p>
+                      <p className="text-sm font-medium text-foreground">{t("profile.tutorialEnabled")}</p>
                       <p className="text-xs text-muted-foreground">
-                        {perfilQuery.data?.onboardingEnabled ? "Ativado — exibido na próxima sessão" : "Desativado"}
+                        {perfilQuery.data?.onboardingEnabled ? t("profile.tutorialActive") : t("profile.tutorialInactive")}
                       </p>
                     </div>
                   </div>
@@ -606,7 +664,7 @@ export default function Perfil() {
                     }}
                     className="mt-3 w-full text-sm text-[#1A73C4] hover:underline text-center"
                   >
-                    Reativar e ver tutorial agora
+                    {t("profile.reactivateTutorial")}
                   </button>
                 )}
               </div>

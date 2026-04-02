@@ -165,3 +165,14 @@
 - [x] Remover controle de sessionStorage/localStorage do onboarding
 - [x] Exibir onboarding toda vez que o usuário fizer login (não apenas uma vez por sessão)
 - [x] Respeitar apenas o campo `onboarding_enabled` do banco para controle de exibição
+
+## ✅ Sprint v19 — Internacionalização (PT/EN) e Usuária Cecília
+
+- [x] Adicionar campo `language` (enum: 'pt' | 'en') na tabela `app_users`
+- [x] Criar usuária `cecilia` com senha `123` e idioma `en`
+- [x] Criar contexto i18n com dicionários PT e EN
+- [x] Traduzir Login, Sidebar (navegação), Perfil e diálogo de logout
+- [x] Adicionar seletor de idioma na página de Perfil (bandeiras PT/EN)
+- [x] Integrar preferência de idioma com o banco de dados (procedure `perfil.setLanguage`)
+- [x] `updateLanguage()` no AppAuthContext para atualização instantânea sem recarregar
+- [x] 36 testes unitários passando, TypeScript sem erros

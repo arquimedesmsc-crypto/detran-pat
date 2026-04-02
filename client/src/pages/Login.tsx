@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAppAuth } from "@/contexts/AppAuthContext";
+import { useI18n } from "@/contexts/I18nContext";
 import { useLocation } from "wouter";
 import { Eye, EyeOff, Lock, User, AlertCircle } from "lucide-react";
 
@@ -8,6 +9,7 @@ const DETRAN_ICON_URL = "https://d2xsxph8kpxj0f.cloudfront.net/31051966344308189
 
 export default function Login() {
   const { login, isAuthenticated, isLoading } = useAppAuth();
+  const { t, language } = useI18n();
   const [, navigate] = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +35,7 @@ export default function Login() {
       await login(username.trim(), password);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err?.message ?? "Usuário ou senha inválidos.");
+      setError(err?.message ?? t("login.error"));
     } finally {
       setSubmitting(false);
     }
@@ -59,7 +61,7 @@ export default function Login() {
         />
         <h1 className="text-white text-4xl font-black tracking-tight text-center">DETRAN-RJ</h1>
         <p className="text-white/70 text-lg font-medium mt-2 tracking-widest uppercase text-center">Sistema de Patrimônio</p>
-        <p className="text-white/40 text-sm mt-4 text-center max-w-xs">Levantamento e controle de bens patrimoniais — 2025/2026</p>
+        <p className="text-white/40 text-sm mt-4 text-center max-w-xs">{language === "en" ? "Asset survey and control — 2025/2026" : "Levantamento e controle de bens patrimoniais — 2025/2026"}</p>
       </div>
 
       {/* Divisor vertical */}
@@ -94,17 +96,17 @@ export default function Login() {
           }}
         >
           <h2 className="text-xl font-bold mb-1" style={{ color: "#1B4F72" }}>
-            Bem-vindo de volta
+            {t("login.title")}
           </h2>
           <p className="text-sm text-gray-500 mb-6">
-            Acesse com suas credenciais institucionais
+            {t("login.subtitle")}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Campo usuário */}
             <div>
               <label className="block text-sm font-semibold mb-1.5" style={{ color: "#1B4F72" }}>
-                Usuário
+                {t("login.username")}
               </label>
               <div className="relative">
                 <User
@@ -115,7 +117,7 @@ export default function Login() {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="ex: moises.costa"
+                  placeholder={language === "en" ? "e.g.: john.doe" : "ex: moises.costa"}
                   autoComplete="username"
                   className="w-full pl-10 pr-4 py-3 rounded-xl border-2 text-sm outline-none transition-all"
                   style={{
@@ -131,7 +133,7 @@ export default function Login() {
             {/* Campo senha */}
             <div>
               <label className="block text-sm font-semibold mb-1.5" style={{ color: "#1B4F72" }}>
-                Senha
+                {t("login.password")}
               </label>
               <div className="relative">
                 <Lock
@@ -181,7 +183,7 @@ export default function Login() {
               }}
             >
               <span className="relative z-10">
-                {submitting ? "Entrando..." : "Entrar no Sistema"}
+                {submitting ? (language === "en" ? "Signing in..." : "Entrando...") : t("login.button")}
               </span>
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
@@ -193,14 +195,14 @@ export default function Login() {
           {/* Rodapé */}
           <div className="mt-6 pt-5 border-t border-gray-100 text-center">
             <p className="text-xs text-gray-400">
-              DTIC / Patrimônio · Levantamento 2025/2026
+              {language === "en" ? "DTIC / Assets · 2025/2026 Survey" : "DTIC / Patrimônio · Levantamento 2025/2026"}
             </p>
           </div>
         </div>
 
         {/* Versão */}
         <p className="text-center text-white/40 text-xs mt-6">
-          v2.0 · Ambiente de Desenvolvimento
+          {language === "en" ? "v2.0 · Development Environment" : "v2.0 · Ambiente de Desenvolvimento"}
         </p>
       </div>
     </div>

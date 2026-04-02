@@ -5,6 +5,8 @@ import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AppAuthProvider, useAppAuth } from "./contexts/AppAuthContext";
+import { I18nProvider } from "./contexts/I18nContext";
+import type { Language } from "./contexts/I18nContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import SplashScreen from "./components/SplashScreen";
 import OnboardingModal from "./components/OnboardingModal";
@@ -35,10 +37,9 @@ function OnboardingController() {
     { token: token ?? "" },
     { enabled: !!token && isAuthenticated, staleTime: 60_000 }
   );
-
   const setOnboardingMutation = trpc.perfil.setOnboarding.useMutation();
 
-    useEffect(() => {
+  useEffect(() => {
     if (!isAuthenticated || !user || checked) return;
     if (perfilQuery.isLoading) return;
     // Exibir onboarding toda vez que o usuário logar,
@@ -62,7 +63,6 @@ function OnboardingController() {
   };
 
   if (!showOnboarding) return null;
-
   return (
     <OnboardingModal
       onClose={handleClose}
@@ -81,10 +81,8 @@ function Router() {
         <Route path="/">
           <Redirect to="/login" />
         </Route>
-
         {/* Login — público */}
         <Route path="/login" component={Login} />
-
         {/* Rotas protegidas */}
         <Route path="/dashboard">
           <ProtectedRoute><Dashboard /></ProtectedRoute>
@@ -122,7 +120,6 @@ function Router() {
         <Route path="/perfil">
           <ProtectedRoute><Perfil /></ProtectedRoute>
         </Route>
-
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>
@@ -130,22 +127,34 @@ function Router() {
   );
 }
 
+// ─── I18n Wrapper — lê o idioma do usuário logado ────────────────────────────
+function I18nWrapper({ children }: { children: React.ReactNode }) {
+  const { user } = useAppAuth();
+  const language: Language = (user?.language as Language) ?? "pt";
+  return (
+    <I18nProvider language={language}>
+      {children}
+    </I18nProvider>
+  );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 function App() {
   const [splashDone, setSplashDone] = useState(false);
-
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="light" switchable={true}>
         <AppAuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            {!splashDone ? (
-              <SplashScreen onComplete={() => setSplashDone(true)} />
-            ) : (
-              <Router />
-            )}
-          </TooltipProvider>
+          <I18nWrapper>
+            <TooltipProvider>
+              <Toaster />
+              {!splashDone ? (
+                <SplashScreen onComplete={() => setSplashDone(true)} />
+              ) : (
+                <Router />
+              )}
+            </TooltipProvider>
+          </I18nWrapper>
         </AppAuthProvider>
       </ThemeProvider>
     </ErrorBoundary>

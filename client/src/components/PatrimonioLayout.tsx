@@ -4,7 +4,6 @@ import {
   AlertTriangle,
   ArrowLeftRight,
   BarChart3,
-  BookOpen,
   CheckCircle2,
   ChevronDown,
   ChevronLeft,
@@ -22,6 +21,7 @@ import {
 } from "lucide-react";
 import NovoPatrimonioModal from "./NovoPatrimonioModal";
 import { useAppAuth } from "@/contexts/AppAuthContext";
+import { useI18n } from "@/contexts/I18nContext";
 import { toast } from "sonner";
 
 const DETRAN_ICON_URL =
@@ -39,6 +39,7 @@ interface PatrimonioLayoutProps {
 export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
   const [location] = useLocation();
   const { user, logout } = useAppAuth();
+  const { t, language } = useI18n();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [levantamentoOpen, setLevantamentoOpen] = useState(
@@ -73,7 +74,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
 
   const handleLogout = () => {
     logout();
-    toast.success("Sessão encerrada com sucesso.");
+    toast.success(language === "en" ? "Session ended successfully." : "Sessão encerrada com sucesso.");
     setConfirmLogout(false);
   };
 
@@ -138,13 +139,15 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
         {!collapsed && (
           <div className="overflow-hidden flex-1">
             <p className="text-white font-black text-sm leading-tight">DETRAN-RJ</p>
-            <p className="text-xs leading-tight" style={{ color: SIDEBAR_MUTED }}>Patrimônio</p>
+            <p className="text-xs leading-tight" style={{ color: SIDEBAR_MUTED }}>
+              {language === "en" ? "Asset Management" : "Patrimônio"}
+            </p>
           </div>
         )}
         <button
           className="lg:hidden ml-auto p-1 rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-colors"
           onClick={() => setMobileOpen(false)}
-          aria-label="Fechar menu"
+          aria-label={language === "en" ? "Close menu" : "Fechar menu"}
         >
           <X size={20} />
         </button>
@@ -159,7 +162,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
             style={{ background: "linear-gradient(135deg, #1a73c4, #1b8a5a)", boxShadow: "0 4px 12px rgba(26,115,196,0.35)" }}
           >
             <Plus size={16} />
-            Novo Patrimônio
+            {t("nav.newAsset")}
           </button>
         </div>
       )}
@@ -169,7 +172,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
             onClick={() => setNovoModalOpen(true)}
             className="w-full flex items-center justify-center py-2.5 rounded-xl text-white transition-all hover:opacity-90"
             style={{ background: "linear-gradient(135deg, #1a73c4, #1b8a5a)" }}
-            title="Novo Patrimônio"
+            title={t("nav.newAsset")}
           >
             <Plus size={18} />
           </button>
@@ -179,7 +182,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
       {/* Navegação */}
       <nav className="flex-1 py-2 overflow-y-auto">
         {/* Dashboard */}
-        <NavItem path="/dashboard" label="Dashboard" icon={LayoutDashboard} exact />
+        <NavItem path="/dashboard" label={t("nav.dashboard")} icon={LayoutDashboard} exact />
 
         {/* Patrimônios — com submenu */}
         <div>
@@ -201,7 +204,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                   className="text-sm font-medium flex-1 text-left truncate"
                   style={{ color: isLevantamentoActive ? "white" : SIDEBAR_TEXT }}
                 >
-                  Patrimônios
+                  {t("nav.assets")}
                 </span>
                 <ChevronDown
                   size={14}
@@ -226,7 +229,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                 >
                   <List size={15} style={{ color: location === "/patrimonio" ? "#1b8a5a" : SIDEBAR_MUTED }} />
                   <span className="text-xs font-medium" style={{ color: location === "/patrimonio" ? "white" : SIDEBAR_TEXT }}>
-                    Todos os Bens
+                    {language === "en" ? "All Assets" : "Todos os Bens"}
                   </span>
                 </div>
               </Link>
@@ -238,7 +241,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                 >
                   <CheckCircle2 size={15} style={{ color: location === "/localizados" ? "#1b8a5a" : SIDEBAR_MUTED }} />
                   <span className="text-xs font-medium" style={{ color: location === "/localizados" ? "white" : SIDEBAR_TEXT }}>
-                    Localizados
+                    {t("nav.located")}
                   </span>
                 </div>
               </Link>
@@ -250,7 +253,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                 >
                   <AlertTriangle size={15} style={{ color: location === "/nao-localizados" ? "#d4a017" : SIDEBAR_MUTED }} />
                   <span className="text-xs font-medium" style={{ color: location === "/nao-localizados" ? "white" : SIDEBAR_TEXT }}>
-                    Não Localizados
+                    {t("nav.notLocated")}
                   </span>
                 </div>
               </Link>
@@ -259,22 +262,22 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
         </div>
 
         {/* Levantamento Anual */}
-        <NavItem path="/levantamento" label="Levantamento Anual" icon={ClipboardList} />
+        <NavItem path="/levantamento" label={t("nav.annualSurvey")} icon={ClipboardList} />
 
         {/* Transferência */}
-        <NavItem path="/transferencia" label="Transferência" icon={ArrowLeftRight} />
+        <NavItem path="/transferencia" label={t("nav.transfer")} icon={ArrowLeftRight} />
 
         {/* Relatórios */}
-        <NavItem path="/relatorios" label="Relatórios" icon={BarChart3} />
+        <NavItem path="/relatorios" label={t("nav.reports")} icon={BarChart3} />
 
         {/* Perfil */}
-        <NavItem path="/perfil" label="Meu Perfil" icon={User} />
+        <NavItem path="/perfil" label={t("nav.profile")} icon={User} />
         {/* Ajuda */}
-        <NavItem path="/ajuda" label="Ajuda" icon={HelpCircle} />
+        <NavItem path="/ajuda" label={t("nav.help")} icon={HelpCircle} />
 
         {/* Admin — apenas para administradores */}
         {user?.role === "admin" && (
-          <NavItem path="/admin" label="Administração" icon={Settings} />
+          <NavItem path="/admin" label={t("nav.admin")} icon={Settings} />
         )}
       </nav>
 
@@ -291,12 +294,14 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
             </div>
             <div className="flex-1 overflow-hidden">
               <p className="text-xs font-bold text-white/90 truncate">{user?.displayName ?? user?.username}</p>
-              <p className="text-xs capitalize" style={{ color: SIDEBAR_MUTED }}>{user?.role ?? "usuário"}</p>
+              <p className="text-xs capitalize" style={{ color: SIDEBAR_MUTED }}>
+                {user?.role === "admin" ? (language === "en" ? "admin" : "admin") : (language === "en" ? "user" : "usuário")}
+              </p>
             </div>
             <button
               onClick={() => setConfirmLogout(true)}
               className="flex-shrink-0 p-1.5 rounded-lg hover:bg-red-500/20 transition-colors"
-              title="Sair"
+              title={t("common.logout")}
             >
               <LogOut size={15} style={{ color: "#f87171" }} />
             </button>
@@ -305,7 +310,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
           <button
             onClick={() => setConfirmLogout(true)}
             className="w-full flex items-center justify-center py-2 rounded-lg hover:bg-red-500/20 transition-colors"
-            title="Sair"
+            title={t("common.logout")}
           >
             <LogOut size={16} style={{ color: "#f87171" }} />
           </button>
@@ -347,7 +352,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="absolute -right-3 top-20 flex items-center justify-center w-6 h-6 rounded-full bg-white shadow-md border border-border text-slate-500 hover:text-slate-700 transition-colors z-10"
-            aria-label={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+            aria-label={collapsed ? (language === "en" ? "Expand sidebar" : "Expandir sidebar") : (language === "en" ? "Collapse sidebar" : "Colapsar sidebar")}
           >
             {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
           </button>
@@ -363,13 +368,13 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
             <button
               onClick={() => setMobileOpen(true)}
               className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-              aria-label="Abrir menu"
+              aria-label={language === "en" ? "Open menu" : "Abrir menu"}
             >
               <Menu size={22} className="text-slate-700" />
             </button>
             <img src={DETRAN_ICON_URL} alt="DETRAN-RJ" className="w-7 h-7 object-contain" />
             <span className="font-black text-sm flex-1" style={{ color: "#1b4f72" }}>
-              DETRAN-RJ Patrimônio
+              DETRAN-RJ {language === "en" ? "Assets" : "Patrimônio"}
             </span>
             <button
               onClick={() => setNovoModalOpen(true)}
@@ -377,7 +382,7 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
               style={{ background: "linear-gradient(135deg, #1a73c4, #1b8a5a)" }}
             >
               <Plus size={14} />
-              Novo
+              {language === "en" ? "New" : "Novo"}
             </button>
           </header>
 
@@ -405,8 +410,12 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                 <LogOut className="w-6 h-6 text-red-500" />
               </div>
               <div>
-                <h3 className="font-black text-gray-900">Sair do sistema?</h3>
-                <p className="text-sm text-gray-500">Sua sessão será encerrada.</p>
+                <h3 className="font-black text-gray-900">
+                  {language === "en" ? "Sign out?" : "Sair do sistema?"}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {language === "en" ? "Your session will be ended." : "Sua sessão será encerrada."}
+                </p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -415,13 +424,13 @@ export default function PatrimonioLayout({ children }: PatrimonioLayoutProps) {
                 className="flex-1 py-2.5 rounded-xl border-2 text-sm font-bold transition-colors hover:bg-gray-50"
                 style={{ borderColor: "#e2e8f0", color: "#64748b" }}
               >
-                Cancelar
+                {t("common.cancel")}
               </button>
               <button
                 onClick={handleLogout}
                 className="flex-1 py-2.5 rounded-xl text-white text-sm font-bold transition-colors bg-red-500 hover:bg-red-600"
               >
-                Sair
+                {t("common.logout")}
               </button>
             </div>
           </div>

@@ -6,6 +6,7 @@ export interface AppUser {
   username: string;
   displayName: string;
   role: "admin" | "user";
+  language?: "pt" | "en";
 }
 
 interface AppAuthContextType {
@@ -15,6 +16,7 @@ interface AppAuthContextType {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  updateLanguage: (lang: "pt" | "en") => void;
 }
 
 const AppAuthContext = createContext<AppAuthContextType | null>(null);
@@ -59,6 +61,15 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(USER_KEY);
   }, []);
 
+  const updateLanguage = useCallback((lang: "pt" | "en") => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, language: lang };
+      localStorage.setItem(USER_KEY, JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   // Verificar se o token ainda é válido ao carregar
   const verifyQuery = trpc.appAuth.verify.useQuery(
     { token: token ?? "" },
@@ -81,6 +92,7 @@ export function AppAuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         login,
         logout,
+        updateLanguage,
       }}
     >
       {children}

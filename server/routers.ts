@@ -99,6 +99,7 @@ export const appRouter = router({
             username: user.username,
             displayName: user.displayName,
             role: user.role,
+            language: user.language ?? "pt",
           },
         };
       }),
@@ -361,9 +362,19 @@ export const appRouter = router({
           createdAt: user.createdAt,
           lastLogin: user.lastLogin,
           onboardingEnabled: user.onboardingEnabled ?? true,
+          language: user.language ?? "pt",
         };
       }),
-
+    setLanguage: publicProcedure
+      .input(z.object({ token: z.string(), language: z.enum(["pt", "en"]) }))
+      .mutation(async ({ input }) => {
+        const payload = await verifyAppToken(input.token);
+        if (!payload) throw new Error("Token inválido");
+        const db = await getDb();
+        if (!db) throw new Error("Erro de conexão com o banco");
+        await db.update(appUsers).set({ language: input.language }).where(eq(appUsers.id, payload.userId));
+        return { success: true };
+      }),
     update: publicProcedure
       .input(
         z.object({
