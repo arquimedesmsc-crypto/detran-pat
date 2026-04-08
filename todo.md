@@ -176,3 +176,35 @@
 - [x] Integrar preferência de idioma com o banco de dados (procedure `perfil.setLanguage`)
 - [x] `updateLanguage()` no AppAuthContext para atualização instantânea sem recarregar
 - [x] 36 testes unitários passando, TypeScript sem erros
+
+## ✅ Sprint v19 — Internacionalização (PT/EN) e Usuária Cecília
+
+- [x] Adicionar campo `language` (enum: 'pt' | 'en') na tabela `app_users`
+- [x] Criar usuária `cecilia` com senha `123` e idioma `en`
+- [x] Criar contexto i18n com dicionários PT e EN
+- [x] Traduzir Login, Sidebar (navegação), Perfil e diálogo de logout
+- [x] Adicionar seletor de idioma na página de Perfil (bandeiras PT/EN)
+- [x] Integrar preferência de idioma com o banco de dados (procedure `perfil.setLanguage`)
+- [x] `updateLanguage()` no AppAuthContext para atualização instantânea sem recarregar
+- [x] 36 testes unitários passando, TypeScript sem erros
+
+## ✅ Sprint v20 — Documentação Profissional e Apresentação Executiva
+
+- [x] Criar apresentação PPT v3 (8 slides) com padronização visual DETRAN-RJ
+- [x] Logomarca DETRAN em todos os slides (grande na capa, miniatura nos demais)
+- [x] Tipografia coerente (Inter, sem emojis)
+- [x] Cronograma com datas em DD/MM/AA
+- [x] Conteúdo focado em próximos passos e tarefas
+- [x] Criar PDF profissional (13 páginas) com design institucional
+- [x] Índice com paginação funcional
+- [x] Cabeçalho com endereço DETRAN em todas as páginas
+- [x] Rodapé com nome, ID funcional e número de página
+- [x] Fontes maiores (11pt corpo, 22pt títulos)
+- [x] Seções específicas para cada stakeholder (Michelle, Pedro, Alexandre)
+- [x] Sem espaços em branco excessivos (máximo 20% por página)
+- [x] Cronograma Gantt com 7 fases (abril a junho 2026)
+- [x] Glossário didático para não-técnicos
+- [x] Cópia do projeto para desktop (/mnt/desktop/Patrimonio)
+- [x] Sincronização com GitHub (repositório user_github)
+
+> Última atualização: 2026-04-08
