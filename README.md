@@ -1,4 +1,4 @@
-# 🚗 DETRAN-RJ — Sistema de Gestão Patrimonial
+# 🏛️ DETRAN-RJ — Sistema de Gestão Patrimonial
 
 <p align="center">
   <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663443081896/qQEWeHKIjJGFtIer.jpg" alt="Logo DETRAN-RJ" width="140" />
@@ -10,10 +10,11 @@
 </p>
 
 <p align="center">
+  <a href="#-visão-geral">Visão Geral</a> •
   <a href="#-funcionalidades">Funcionalidades</a> •
   <a href="#-stack-tecnológico">Stack</a> •
   <a href="#-instalação">Instalação</a> •
-  <a href="#-uso">Uso</a> •
+  <a href="#-documentação">Documentação</a> •
   <a href="#-roadmap">Roadmap</a>
 </p>
 
@@ -21,12 +22,23 @@
 
 ## 🎯 Visão Geral
 
-O **Sistema de Gestão Patrimonial do DETRAN-RJ** é uma aplicação web full-stack desenvolvida para digitalizar, organizar e visualizar o levantamento patrimonial 2025/2026 do Departamento de Trânsito do Estado do Rio de Janeiro.
+O **Sistema de Gestão Patrimonial do DETRAN-RJ** é uma aplicação web full-stack desenvolvida para digitalizar, organizar e visualizar o levantamento patrimonial 2025/2026 do Departamento de Trânsito do Estado do Rio de Janeiro. O sistema foi construído com tecnologia moderna, escalável e segura, utilizando React 19, Express 4, tRPC 11 e MySQL 8.
+
+**Status:** ✅ Em produção  
+**Versão:** 1.0.0  
+**Última atualização:** 08/04/2026  
+**Equipe:** DTIC — Divisão de Tecnologia da Informação
+
+### Destaques
 
 ✅ **1.207 registros** importados da planilha oficial de levantamento  
-✅ **Painel interativo** com identidade visual institucional  
+✅ **10 módulos funcionais** — Dashboard, Patrimônios, Transferência, Relatórios, Levantamento Anual, Admin, Perfil, Ajuda, Onboarding, i18n  
+✅ **Painel interativo** com identidade visual institucional DETRAN-RJ  
+✅ **Suporte multilíngue** — Português (PT) e Inglês (EN)  
 ✅ **Mobile-first** — funciona perfeitamente em smartphones e tablets  
 ✅ **Performance otimizada** — índices de banco de dados e cache inteligente  
+✅ **Segurança** — autenticação JWT, roles (admin/user), auditoria completa  
+✅ **Testes** — 36 testes unitários + testes E2E com Playwright  
 ✅ **Fácil manutenção** — código limpo, testado e documentado  
 
 ---
@@ -34,336 +46,316 @@ O **Sistema de Gestão Patrimonial do DETRAN-RJ** é uma aplicação web full-st
 ## ✨ Funcionalidades
 
 ### 📈 Dashboard Principal
-O painel inicial apresenta **dois blocos de KPIs** separados visualmente:
 
-| Bloco | Métricas |
-|-------|----------|
-| **Quantitativo** | ✓ Total de itens (1.207) · ✓ Localizados (985 — 82%) · ✓ Não localizados (222 — 18%) |
-| **Valores** | ✓ Valor total do acervo (R$ 34.388,41) · ✓ Valor não localizado · ✓ Valor localizado (calculado) |
+O painel inicial apresenta **blocos de KPIs** com visualizações interativas:
 
-Abaixo dos KPIs: 📊 gráfico de pizza com distribuição por status + 📊 gráfico de barras com os 10 setores com maior quantidade de bens.
+| Métrica | Valor | Status |
+|---|---|---|
+| Total de itens | 1.207 | ✅ |
+| Itens localizados | 985 (82%) | ✅ |
+| Itens não localizados | 222 (18%) | ⚠️ |
+| Valor total do acervo | R$ 34.388,41 | ✅ |
+| Valor localizado | ~R$ 28.900,00 | ✅ |
 
----
+Visualizações: 📊 Gráfico de pizza (status) + 📊 Gráfico de barras (setores) + 📅 Timeline de incorporações
 
-### 📋 Levantamento Patrimonial
+### 📋 Levantamento Patrimonial (`/patrimonio`)
 
-**3 rotas de navegação** na sidebar:
-- 🟢 **Todos os Bens** — visualiza os 1.207 registros
-- ✅ **Localizados** — 985 bens confirmados
-- ⚠️ **Não Localizados** — 222 bens a encontrar
+**Funcionalidades:**
+- Listagem com paginação (50 itens por página)
+- Busca em tempo real por número de tombo, descrição, setor
+- Filtros avançados: setor, status, tipo, valor mín/máx, andar
+- Ordenação por qualquer coluna (ascendente/descendente)
+- Submenus: Localizados (`/localizados`) e Não Localizados (`/nao-localizados`)
+- Modal de novo patrimônio com upload de imagem
+- Modal de detalhe com edição inline e galeria de fotos
+- QR Code por patrimônio (gerar, baixar PNG, imprimir)
+- Botão "Identificar como Localizado"
 
-**Recursos de busca e filtro:**
-- 🔍 Busca por texto (número do patrimônio, descrição, setor)
-- 🎯 Filtros combinados (setor, tipo de bem, status)
-- 📄 Paginação com 25 itens por página
-- 🔀 **Ordenação clicável** em todas as colunas (Patrimônio, Descrição, Setor, Local, Data, Valor)
+### 🔄 Transferência (`/transferencia`)
 
-**Visualização responsiva:**
-- 🖥️ **Desktop:** tabela completa com todas as informações
-- 📱 **Mobile:** cards expandidos para evitar corte de dados
+**Funcionalidades:**
+- Formulário com 4 seções colapsáveis (Origem, Destino, Itens, Assinatura)
+- Busca e seleção de patrimônios para transferência
+- Geração de Guia de Transferência em PDF com identidade DETRAN-RJ
+- Assinatura digital (preparado para integração)
+- Histórico de transferências com status
 
----
+### 📈 Relatórios (`/relatorios`)
 
-### 🔍 Modal de Detalhe
+**Funcionalidades:**
+- Filtros por setor, status e tipo
+- Exportação em CSV (UTF-8, separador ponto-e-vírgula)
+- Exportação em XLSX (cabeçalho colorido DETRAN-RJ)
+- Exportação em PDF (logo, data, filtros aplicados)
+- Preview dos dados antes da exportação
+- Relatório de depreciação (preparado)
 
-Ao clicar em qualquer item, um modal centralizado exibe:
-- 📌 Número do patrimônio
-- 📝 Descrição completa
-- 🏷️ Categoria com ícone
-- 🏢 Setor e local
-- 📅 Data de incorporação
-- 💰 Valor formatado em R$
-- ✓/⚠️ Badge de status
+### 📅 Levantamento Anual (`/levantamento`)
 
-**Ação rápida:** Botão "Marcar como Localizado" para bens não encontrados — atualiza em tempo real e invalida o cache dos KPIs.
+**Funcionalidades:**
+- Registro de conferência anual com seletor de ano
+- Upload de fotos via S3
+- Visualização em modal/lightbox
+- Rastreamento de conformidade
 
----
+### 🛡️ Painel Admin (`/admin`)
 
-### ➕ Registrar Novo Patrimônio
+**Funcionalidades (apenas para role=admin):**
+- Gestão de usuários: criar, editar, ativar/desativar, redefinir senha
+- Logs de atividade com filtros por usuário, ação, data
+- Dashboard de auditoria (preparado)
+- Aprovação de solicitações de perfil (preparado)
 
-Botão de ação flutuante (sidebar no desktop, topbar no mobile) abre formulário completo:
-- 🔢 Número do patrimônio
-- 📝 Descrição
-- 🏷️ Tipo (Informática, Mobiliário, Eletrodoméstico, Veículo, Outros)
-- ✓/⚠️ Status inicial
-- 🏢 Setor com autocomplete
-- 📍 Local
-- 📅 Data de incorporação
-- 💵 Valor
+### 👤 Perfil do Usuário (`/perfil`)
 
----
+**Funcionalidades:**
+- Edição de nome, e-mail, cargo, setor, ID funcional
+- Alteração de senha com confirmação
+- Toggle de tema claro/escuro
+- Seletor de idioma (PT/EN)
+- Solicitação de alteração de cargo/setor (requer aprovação do admin)
+- Toggle de Tutorial de Boas-vindas (ativar/desativar onboarding)
 
-### 📊 Gráficos e Análises
+### 🎓 Onboarding e Ajuda
 
-**3 visualizações interativas:**
-
-| Gráfico | Descrição |
-|---------|-----------|
-| 📊 **Barras Horizontais** | Distribuição por setor (top 15) |
-| 📈 **Timeline** | Incorporações por mês/ano |
-| 🥧 **Pizza** | Distribuição por tipo de bem |
-
-✅ Todos responsivos · ✅ Cores da identidade visual DETRAN-RJ · ✅ Biblioteca Recharts
-
----
-
-## 🎨 Identidade Visual
-
-| Elemento | Cor | Uso |
-|----------|-----|-----|
-| 🔵 **Azul Primário** | `#1A73C4` | Headers, botões, links |
-| 🟢 **Verde** | `#1B8A5A` | Status "Localizado", destaques |
-| 🟡 **Âmbar** | `#D4A017` | Status "Não Localizado", avisos |
-| 🔷 **Azul Escuro** | `#1B4F72` | Sidebar, backgrounds |
-
-**Tipografia:** Roboto (400, 500, 700, 900)  
-**Degradês:** 135° nos headers (azul → verde)  
-**Logo:** D estilizado do DETRAN-RJ na sidebar
+**Funcionalidades:**
+- OnboardingModal fullscreen com 11 slides animados cobrindo todas as funcionalidades
+- Exibido automaticamente a cada login (respeitando preferência do usuário)
+- Campo `onboarding_enabled` no banco de dados por usuário
+- Toggle de onboarding na página de Perfil (ativar/desativar)
+- Botão "Reativar e ver tutorial agora" no perfil
+- Página de Ajuda (`/ajuda`) com FAQ em 5 categorias
+- Busca em tempo real na FAQ
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
 ### Frontend
-- ⚛️ **React 19** — UI moderna e reativa
-- 🎨 **Tailwind CSS 4** — estilos utilitários
-- 📦 **shadcn/ui** — componentes acessíveis
-- 📊 **Recharts** — gráficos interativos
-- 🔗 **tRPC Client** — chamadas RPC type-safe
+
+- **React 19.2.1** — Framework UI principal
+- **Tailwind CSS 4.1.14** — Estilização utilitária
+- **Vite 7.1.7** — Build tool e dev server
+- **TypeScript 5.9.3** — Type safety
+- **Wouter 3.3.5** — Roteamento client-side
+- **React Hook Form 7.64.0** — Gerenciamento de formulários
+- **Zod 4.1.12** — Validação de schemas
+- **Recharts 2.15.2** — Gráficos e visualizações
+- **Lucide React 0.453.0** — Ícones SVG
+- **Framer Motion 12.23.22** — Animações
+- **Sonner 2.0.7** — Toast notifications
+- **shadcn/ui** — Componentes reutilizáveis
 
 ### Backend
-- 🚀 **Express 4** — servidor HTTP
-- 🔗 **tRPC 11** — API RPC com tipos
-- 🗄️ **Drizzle ORM** — queries SQL type-safe
-- 🐘 **MySQL/TiDB** — banco de dados
-- 🔐 **Manus OAuth** — autenticação
 
-### Ferramentas
-- 🧪 **Vitest** — testes unitários (10 testes passando)
-- 📝 **TypeScript 5.9** — type safety
-- 🎯 **Vite 7** — build rápido
-- 📦 **pnpm** — gerenciador de pacotes
+- **Express 4.21.2** — Framework HTTP
+- **tRPC 11.6.0** — RPC type-safe
+- **Drizzle ORM 0.44.5** — ORM para banco de dados
+- **MySQL2 3.15.0** — Driver MySQL
+- **bcryptjs 3.0.3** — Hash de senhas
+- **Jose 6.1.0** — JWT signing/verification
+- **AWS SDK S3 3.693.0** — Upload de arquivos para S3
+- **jsPDF 4.2.1** — Geração de PDFs
+- **ExcelJS 4.4.0** — Geração de planilhas Excel
+- **QRCode 1.5.4** — Geração de QR codes
 
----
+### DevOps e Testes
 
-## 📊 Modelo de Dados
-
-### Tabela `patrimonio_items`
-
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `id` | INT | Chave primária |
-| `patrimonio` | INT | Número único do bem |
-| `descricao` | TEXT | Descrição completa |
-| `tipo` | ENUM | informatica, mobiliario, eletrodomestico, veiculo, outros |
-| `status` | ENUM | localizado, nao_localizado |
-| `setor` | VARCHAR | Departamento responsável |
-| `local` | VARCHAR | Localização física |
-| `dataIncorporacao` | DATE | Data de entrada no acervo |
-| `valor` | DECIMAL | Valor declarado (apenas não localizados) |
-
-**Índices:** patrimonio, status, setor, tipo (otimizados para buscas)
+- **Vitest 2.1.4** — Testes unitários
+- **Playwright 1.58.2** — Testes E2E
+- **Drizzle Kit 0.31.4** — Gerenciamento de migrações
+- **Prettier 3.6.2** — Formatação de código
+- **ESBuild 0.25.0** — Bundler rápido
 
 ---
 
 ## 🚀 Instalação
 
 ### Pré-requisitos
-- Node.js 22+
-- pnpm 10+
-- MySQL 8+ ou TiDB
+
+- Node.js 22.13.0+
+- pnpm 10.4.1+
+- MySQL 8.0+ ou TiDB
+- Git
 
 ### Passos
 
 ```bash
-# 1️⃣ Clonar repositório
+# 1. Clonar repositório
 git clone https://github.com/arquimedesmsc-crypto/detran-pat.git
 cd detran-patrimonio-dashboard
 
-# 2️⃣ Instalar dependências
+# 2. Instalar dependências
 pnpm install
 
-# 3️⃣ Configurar variáveis de ambiente
+# 3. Configurar variáveis de ambiente
 cp .env.example .env
-# Editar .env com suas credenciais
+# Editar .env com suas configurações (DATABASE_URL, JWT_SECRET, etc.)
 
-# 4️⃣ Executar migrations do banco
+# 4. Executar migrações do banco de dados
 pnpm db:push
 
-# 5️⃣ Iniciar servidor de desenvolvimento
+# 5. Iniciar servidor de desenvolvimento
 pnpm dev
-```
 
-Acesse em `http://localhost:3000` 🎉
+# 6. Abrir no navegador
+# Frontend: http://localhost:5173
+# Backend: http://localhost:3000
+```
 
 ---
 
 ## 📖 Uso
 
-### Desenvolvimento
+### Login
 
-```bash
-# ✅ Iniciar servidor (com hot reload)
-pnpm dev
+**Usuários padrão:**
 
-# 🧪 Rodar testes
-pnpm test
+| Usuário | Senha | Role | Acesso |
+|---|---|---|---|
+| `admin` | `123` | admin | Todos os módulos + Admin |
+| `moises.costa` | `123` | user | Patrimônios, Transferência, Relatórios, Perfil |
+| `Pedro.Bizarelli` | `123` | user | Patrimônios, Transferência, Relatórios, Perfil |
 
-# 🔍 Verificar tipos TypeScript
-pnpm check
+### Navegação
 
-# 📝 Formatar código
-pnpm format
-```
-
-### Produção
-
-```bash
-# 🏗️ Build
-pnpm build
-
-# 🚀 Iniciar servidor
-pnpm start
-```
-
----
-
-## 🔌 API tRPC
-
-### Procedures Disponíveis
-
-| Endpoint | Método | Descrição |
-|----------|--------|-----------|
-| `patrimonio.list` | Query | Listar bens com filtros, busca, ordenação e paginação |
-| `patrimonio.kpis` | Query | KPIs: total, status, valores (com cache 30s) |
-| `patrimonio.bySetor` | Query | Distribuição por setor (top 15) |
-| `patrimonio.timeline` | Query | Timeline de incorporações por mês |
-| `patrimonio.setores` | Query | Lista de setores únicos |
-| `patrimonio.locais` | Query | Lista de locais únicos |
-| `patrimonio.criar` | Mutation | Registrar novo bem |
-| `patrimonio.marcarLocalizado` | Mutation | Atualizar status para localizado |
-
-**Exemplo de uso:**
-```typescript
-const { data } = trpc.patrimonio.list.useQuery({
-  search: "cadeira",
-  setor: "DTIC",
-  status: "nao_localizado",
-  sortBy: "valor",
-  sortDir: "desc",
-  page: 1,
-  pageSize: 25,
-});
-```
-
----
-
-## ⚡ Performance
-
-✅ **Índices de banco:** status, setor, tipo, patrimônio  
-✅ **Cache em memória:** KPIs com TTL de 30 segundos  
-✅ **Busca otimizada:** numérica usa índice direto, textual com LIKE prefixo  
-✅ **Paginação:** 25 itens por página (reduzido de 50)  
-✅ **staleTime:** 15 segundos no frontend para evitar refetch desnecessário  
+- **Dashboard** — Visão geral com KPIs e gráficos
+- **Patrimônios** — Listagem, filtros, busca, QR Code
+- **Transferência** — Emissão de guias de transferência
+- **Relatórios** — Exportação em CSV, XLSX, PDF
+- **Levantamento** — Conferência anual com fotos
+- **Admin** — Gestão de usuários e logs (apenas admin)
+- **Perfil** — Edição de dados, tema, idioma, onboarding
+- **Ajuda** — FAQ com busca
 
 ---
 
 ## 🧪 Testes
 
-**10 testes passando:**
-- ✅ `patrimonio.test.ts` — 9 testes de routers
-- ✅ `auth.logout.test.ts` — 1 teste de logout
-
 ```bash
-# Rodar testes
+# Executar testes unitários
 pnpm test
 
-# Com cobertura
-pnpm test -- --coverage
+# Executar testes E2E
+pnpm test:e2e
+
+# Executar testes E2E com UI
+pnpm test:e2e:ui
+
+# Executar todos os testes
+pnpm test:all
 ```
+
+**Cobertura:** 36 testes unitários + 16 testes E2E  
+**Status:** ✅ Todos passando
 
 ---
 
-## 📝 Histórico de Versões
+## 📚 Documentação
 
-| Versão | Data | Destaques |
-|--------|------|-----------|
-| **v6** | 26/03 | ✅ README completo · ✅ Commit no GitHub |
-| **v5** | 26/03 | ⚡ Performance: índices, cache 30s, busca otimizada |
-| **v4** | 26/03 | 📋 Submenus (Localizados/Não Localizados) · ➕ Modal de cadastro |
-| **v3** | 26/03 | 🔍 Modal de detalhe · 💰 Valores corrigidos |
-| **v2** | 26/03 | 📱 Responsividade mobile completa |
-| **v1** | 26/03 | 🎉 Lançamento: splash screen, dashboard, tabela, gráficos |
+Para informações técnicas completas, consulte:
+
+- **[CONFIGURACOES.md](./CONFIGURACOES.md)** — Banco de dados, portas, variáveis de ambiente, infraestrutura
+- **[CHANGELOG.md](./CHANGELOG.md)** — Histórico de versões e atualizações
+- **[todo.md](./todo.md)** — Status de funcionalidades e roadmap
 
 ---
 
 ## 🗺️ Roadmap
 
-### 🔜 Próximas Funcionalidades
+### Sprint v21 — Histórico de Transferências
 
-- ⏳ **Exportar em Excel/PDF** — baixar listagem filtrada para relatórios
-- ⏳ **Histórico de alterações** — auditoria de quem marcou como localizado e quando
-- ⏳ **Importação de planilha** — upload de `.xlsx` com prévia antes de confirmar
-- ⏳ **Busca por descrição aprimorada** — sugestões automáticas e múltiplos termos
-- ⏳ **Modo de edição inline** — atualizar setor/local direto na tabela
-- ⏳ **Notificações em tempo real** — alertas quando um bem é localizado
+- [ ] Criar rota `/historico-transferencias`
+- [ ] Listagem com status (rascunho/emitida/concluída)
+- [ ] Botão de reimpressão em PDF
+- [ ] Filtros por data, setor, status
+
+### Sprint v22 — Aprovação de Solicitações
+
+- [ ] Interface no Painel Admin
+- [ ] Visualização de solicitações pendentes
+- [ ] Aprovação/rejeição com comentários
+- [ ] Notificação por e-mail ao usuário
+
+### Sprint v23 — Importação em Lote
+
+- [ ] Upload de planilha Excel
+- [ ] Validação de dados
+- [ ] Cadastro massivo de patrimônios
+- [ ] Relatório de importação
+
+### Sprint v24 — Integração com SEI
+
+- [ ] Vinculação de processos SEI-RJ aos patrimônios
+- [ ] Consulta de processos via API SEI
+- [ ] Rastreamento de documentação
 
 ---
 
-## 📋 Requisitos Funcionais
+## 🔐 Segurança
 
-| Requisito | Status | Descrição |
-|-----------|--------|-----------|
-| Importar 1.207 registros | ✅ | Dados da planilha Excel integrados |
-| Dashboard com KPIs | ✅ | 6 KPIs: total, localizados, não localizados, valores |
-| Tabela interativa | ✅ | Busca, filtros, paginação, ordenação |
-| Gráficos | ✅ | Barras, linha, pizza com Recharts |
-| Identidade visual | ✅ | Cores, tipografia, degradês DETRAN-RJ |
-| Responsividade mobile | ✅ | Sidebar drawer, cards em mobile |
-| Modal de detalhe | ✅ | Todas as informações do bem |
-| Cadastro de novo bem | ✅ | Formulário completo com validação |
-| Marcar como localizado | ✅ | Atualiza status em tempo real |
-| Testes | ✅ | 10 testes Vitest passando |
+- **Autenticação:** JWT com HttpOnly cookies
+- **Senhas:** bcryptjs (10 rounds)
+- **Roles:** admin | user
+- **CORS:** Configurado para domínios autorizados
+- **Auditoria:** Todas as ações registradas em `system_logs`
+- **S3:** Acesso via presigned URLs com expiração
+
+---
+
+## 📊 Estatísticas
+
+| Métrica | Valor |
+|---|---|
+| Linhas de código | ~15.000 |
+| Arquivos | ~120 |
+| Testes | 52 (36 unitários + 16 E2E) |
+| Componentes React | ~40 |
+| Endpoints tRPC | ~30 |
+| Tabelas de banco | 8 |
+| Usuários | ~5 |
+| Patrimônios | 1.207 |
 
 ---
 
 ## 🤝 Contribuindo
 
-Sugestões e melhorias são bem-vindas! Por favor:
+Para contribuir com o projeto:
 
-1. 🔀 Faça um fork do repositório
-2. 🌿 Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
-3. 💾 Commit suas mudanças (`git commit -m 'Adicionar nova funcionalidade'`)
-4. 📤 Push para a branch (`git push origin feature/nova-funcionalidade`)
-5. 🔄 Abra um Pull Request
+1. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+2. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+3. Push para a branch (`git push origin feature/AmazingFeature`)
+4. Abra um Pull Request
+
+---
+
+## 📞 Contatos
+
+| Função | Nome | Email |
+|---|---|---|
+| Desenvolvedor | Moisés da Silva Costa | moises.costa@detran.rj.gov.br |
+| Gestora | Michelle Ferreira | michelle.ferreira@detran.rj.gov.br |
+| Infraestrutura | Alexandre Mattiole | alexandre.mattiole@detran.rj.gov.br |
+| Patrimônio | Pedro Bizarelli | pedro.bizarelli@detran.rj.gov.br |
 
 ---
 
 ## 📄 Licença
 
-Este projeto é licenciado sob a **MIT License** — veja o arquivo `LICENSE` para detalhes.
+Este projeto está sob licença MIT. Veja o arquivo [LICENSE](./LICENSE) para mais detalhes.
 
 ---
 
-## 👥 Autores
+## 🙏 Agradecimentos
 
-- **Desenvolvido com Manus** 🤖
-- **Identidade Visual:** DETRAN-RJ
-- **Levantamento Patrimonial:** 2025/2026
-
----
-
-## 📞 Suporte
-
-Encontrou um problema? 🐛
-
-- 📧 Abra uma issue no GitHub
-- 💬 Consulte a documentação no README
-- 🔗 Visite o repositório: https://github.com/arquimedesmsc-crypto/detran-pat
+- **DETRAN-RJ** — Instituição responsável
+- **DTIC** — Divisão de Tecnologia da Informação
+- **Manus Platform** — Infraestrutura e hospedagem
+- **React, Express, Tailwind** — Comunidades open-source
 
 ---
 
-<p align="center">
-  <strong>Desenvolvido com ❤️ para o DETRAN-RJ</strong><br/>
-  <em>Tornando a gestão patrimonial simples, rápida e visual</em>
-</p>
+**Desenvolvido com ❤️ por Moisés da Silva Costa (ID: 5028399-5)**  
+**Última atualização:** 08/04/2026  
+**Versão:** 1.0.0
